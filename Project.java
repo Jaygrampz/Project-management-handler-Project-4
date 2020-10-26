@@ -1,4 +1,6 @@
+
 public class Project {
+
 	// Attributes
 	private String projectName;
 	private int projectNumber;
@@ -23,6 +25,11 @@ public class Project {
 		return details;
 	}
 
+	@Override
+	public String toString() {
+		return projectName + projectNumber + buildingType + physicalAddress + erfNumber + projectFee + currBalance
+				+ projectDeadline;
+	}
 
 	// Getters
 
@@ -92,7 +99,6 @@ public class Project {
 		this.projectDeadline = projectDeadline;
 	}
 
-
 	// Constructor
 	public Project(String projectName, int projectNumber, String buildingType, String physicalAddress, int erfNumber,
 			float projectFee, float currBalance, String projectDeadline) {
@@ -105,6 +111,10 @@ public class Project {
 		this.currBalance = currBalance;
 		this.projectDeadline = projectDeadline;
 	}
-	
+
+	public String toString(Project newProject) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
