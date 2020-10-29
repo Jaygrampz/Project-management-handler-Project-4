@@ -1,190 +1,230 @@
+import java.io.File;
+import java.io.IOException;
+import java.util.Formatter;
 import java.util.Scanner;
 
 public class UserInterface {
 
 	public static void main(String[] args) {
 
-		boolean registration = true;
+		/* While loop to keep the program running */
 		System.out.println("Welcome to the Poised Project Registration Interface!\n");
-
-		while (registration) {// While loop to keep the program running
+		boolean runningProgram = true;
+		while (runningProgram) {
 			mainMenu();
-			Scanner userChoice = new Scanner(System.in);
-			int choice = userChoice.nextInt();
-
-			// This section deals with the creation of the project object
-			if (choice == 1) {
+			Scanner userMainMenuInput = new Scanner(System.in);
+			int userMainMenuChoice = userMainMenuInput.nextInt();
+			/* This section deals with the creation of the project object */
+			if (userMainMenuChoice == 1) {
 
 				System.out.println("To create a new project file, please enter the following details: \n");
-
-				String nameOfProject = projName();
-
-				int numOfProject = projNum();
-
-				String buildTypeForProject = buildType();
-
-				String physAddForProject = physicalAddress();
-
-				int erfForProject = erfNumber();
-
-				float feesForProject = projFee();
-
-				float balRemaining = projBal();
-
-				String dueDateForProject = dueDate();
-
-				Project newProject = new Project(nameOfProject, numOfProject, buildTypeForProject, physAddForProject,
-						erfForProject, feesForProject, balRemaining, dueDateForProject);
-
-				// Confirmation message of project creation
+				String projectName = projectNameCapture();
+				int projectNumber = projectNumberCapture();
+				String buildingType = buildingTypeCapture();
+				String physicalAddressOfProject = physicalAddressCapture();
+				int erfNumberForProject = erfNumberCapture();
+				float projectFee = projectFeeCapture();
+				float outstandingBalance = outstandingBalance();
+				String projectDeadline = projectDeadline();
+				Project newProjectObject = new Project(projectName, projectNumber, buildingType,
+						physicalAddressOfProject, erfNumberForProject, projectFee, outstandingBalance, projectDeadline);
 				System.out.println("Your project has been successfully registered");
-				System.out.println(newProject.displayProj() + "\n");
+				System.out.println(newProjectObject.displayProject() + "\n");
 
-				// THis piece of code deals with changing the deadline date
-				System.out.println("This is your current deadline date: " + " " + newProject.getProjectDeadline() + " "
-						+ "Would you like to change it? 1 - Yes or 2 - No\\n");
-				Scanner dateChoice = new Scanner(System.in);
-				int deadlineChoice = dateChoice.nextInt();
-
+				/* This piece of code deals with changing the deadline date */
+				System.out.println("This is your current deadline date: " + " " + newProjectObject.getProjectDeadline()
+				+ " " + "Would you like to change it? 1 - Yes or 2 - No\\n");
+				Scanner userInputToChangeDeadline = new Scanner(System.in);
+				int deadlineChoice = userInputToChangeDeadline.nextInt();
 				if (deadlineChoice == 1) {
-					System.out.println("Enter the new date: ");
-					Scanner deadlineChange = new Scanner(System.in);
-					String newDate = deadlineChange.nextLine();
-
-					newProject.setProjectDeadline(newDate);
-
-					System.out.println("Your new deadline has been successfully registered");
-					System.out.println(newProject.displayProj() + "\n");
+					deadlineChange(newProjectObject);
 				}
 
-				// This piece of code deals with the change of the current balance
-
-				System.out.println("This is the current balance still to be paid: " + " " + newProject.getCurrBalance()
-						+ " " + "Would you like to change it? 1 - Yes or 2 - No\\n");
-				Scanner balChoice = new Scanner(System.in);
-				int currBalChoice = balChoice.nextInt();
-
-				if (currBalChoice == 1) {
-					System.out.println("Enter the new balance: ");
-					Scanner balanceChange = new Scanner(System.in);
-					float newBalance = balanceChange.nextFloat();
-
-					newProject.setCurrBalance(newBalance);
+				/*This piece of code deals with the change of the current balance*/ 
+				System.out.println(
+						"This is the current balance still to be paid: " + " " + newProjectObject.getCurrBalance() + " "
+								+ "Would you like to change it? 1 - Yes or 2 - No\\n");
+				Scanner userInputToChangeOutstandingBalance = new Scanner(System.in);
+				int choiceToChangeOutstandingBalance = userInputToChangeOutstandingBalance.nextInt();
+				if (choiceToChangeOutstandingBalance == 1) {
+					outstandingBalanceChange(newProjectObject);
 				}
 
-				// Finalizing the project
+				/* Finalizing the project */
 				System.out.println(
 						"Finalize the project by generating an invoice for the client. 1 - Proceed\n 2 - Return to main menu");
-				Scanner finalInput = new Scanner(System.in);
-				int finalChoice = finalInput.nextInt();
+				Scanner userFinalisationInput = new Scanner(System.in);
+				int userFinalisationChoice = userFinalisationInput.nextInt();
+				if (userFinalisationChoice == 1) {
 
-				if (finalChoice == 1) {
-					System.out.println(
-							"An invoice will be generated by the system. Please enter the client's details: \n");
-					// Capturing client details to crate client object
-					String nameOfClient = customerName();
+					System.out.println("An invoice will be generated by the system. Please enter the client's details: \n");
 
-					int teleOfClient = customerTelNum();
+					/* Capturing client details to create client object */
+					Client newClientObject = clientObjectCreation();
 
-					String emailOfClient = customerEmailAddress();
-
-					String addressOfClient = customerPhysAdd();
-
-					Client newClient = new Client(nameOfClient, teleOfClient, emailOfClient, addressOfClient);// Client
-					// object
-
-					float amountToPay = newProject.getProjectFee() - newProject.getCurrBalance();// The balance to still
-																									// to be paid
-
-					// Invoice generation
-
+					/* Invoice generation */
+					float amountToPay = newProjectObject.getProjectFee() - newProjectObject.getCurrBalance();
 					if (amountToPay > 0) {
-						int invoiceNum = (int) (Math.random() * 100);
-						System.out.println("Invoice " + " " + invoiceNum + "\n");
-						System.out.println(newClient.displayClient() + "\n");
-						System.out.println("Outstanding balance: " + " " + amountToPay);
-
+						invoiceGeneration(newClientObject, amountToPay);
 					}
 
+					/* File Creation & input into the file */
+					String fileName = "CompletedProjects.txt";
+					writeToFile(projectName, projectNumber, buildingType, physicalAddressOfProject, erfNumberForProject,
+							projectFee, outstandingBalance, projectDeadline, fileName);
+
+				} else if (userMainMenuChoice == 2) {
+					/* This section will deal with the creation of the contractor object */
+					Contractor newContractor = contractorObjectCreation();
+					System.out.println(newContractor.displayPerson());
+
+					/* Updating the contractor's telephone number */
+					System.out.println("This is the telephone number of contractor: " + " "
+							+ newContractor.getTelephoneNumber() + " .Would you like to update it? 1 - Yes\n 2 - No");
+					
+					Scanner contractorTelephoneNumChange = new Scanner(System.in);
+					int contractorChoiceTelephone = contractorTelephoneNumChange.nextInt();
+					if (contractorChoiceTelephone == 1) {
+						contractorTelephoneChange(newContractor);
+					}
+
+					/* Updating the contractors email address */
+					System.out.println("This is the email address of contractor: " + " "
+							+ newContractor.getEmailAddress() + " . Would you like to update it? 1 - Yes\n 2 - No");
+					
+					Scanner contractorEmailAddressChange = new Scanner(System.in);
+					int contractorChoiceEmail = contractorEmailAddressChange.nextInt();
+					if (contractorChoiceEmail == 1) {
+						contractorEmailAddressChange(newContractor);
+					}
 				}
+			} else if (userMainMenuChoice == 3) {
+				/* This section of code deals with reading the file contents */
+				System.out.println("The projects captured into the system: \n");
+				fileReaderMethod();
 
-			} else if (choice == 2) {
-				// This section will deal with the creation of the contractor object
-				System.out.println("Please enter the following details to register a new contractor: \n");
-
-				String nameOfContractor = contractorName();
-
-				int teleOfContractor = contractorTelNum();
-
-				String emailOfContractor = contractorEmailAddress();
-
-				String addressOfContractor = contractorPhysAdd();
-
-				Contractor newContractor = new Contractor(nameOfContractor, teleOfContractor, emailOfContractor,
-						addressOfContractor);
-
-				System.out.println("New contractor registered!\n");
-				System.out.println(newContractor.displayContractor());
-
-				// Updating the contractor's telephone number
-				System.out.println("This is the telephone number of contractor: " + " "
-						+ newContractor.getTelephoneNumber() + " . Would you like to update it? 1 - Yes\n 2 - No");
-				Scanner contractorTele = new Scanner(System.in);
-				int contractorChoiceTelephone = contractorTele.nextInt();
-
-				if (contractorChoiceTelephone == 1) {
-					System.out.println("Enter the new telephone number:");
-					Scanner newNumber = new Scanner(System.in);
-					int newTelephone = newNumber.nextInt();
-
-					newContractor.setTelephoneNumber(newTelephone);
-
-					System.out.println("New telephone number registered!\n");
-					System.out.println(newContractor.displayContractor());
-				}
-
-				// Updating the contractors email address
-
-				System.out.println("This is the email address of contractor: " + " " + newContractor.getEmailAddress()
-						+ " . Would you like to update it? 1 - Yes\n 2 - No");
-				Scanner contractorEmail = new Scanner(System.in);
-				int contractorChoiceEmail = contractorEmail.nextInt();
-
-				if (contractorChoiceEmail == 1) {
-					System.out.println("Enter the new email address:");
-					Scanner newEmail = new Scanner(System.in);
-					String newEmailAddress = newEmail.nextLine();
-
-					newContractor.setEmailAddress(newEmailAddress);
-
-					System.out.println("New email address registered!\n");
-					System.out.println(newContractor.displayContractor());
-				}
 			}
 
 		}
 
 	}
 
-	// Methods to capture the details of the project
-	public static String projName() {
-		System.out.println("The name of the project: ");// Name of the project
-		Scanner inputForName = new Scanner(System.in);
-		String nameForProject = inputForName.nextLine();
-
-		return nameForProject;
+	public static void deadlineChange(Project newProjectObject) {
+		System.out.println("Enter the new date: ");
+		Scanner newDateEntry = new Scanner(System.in);
+		String newDate = newDateEntry.nextLine();
+		newProjectObject.setProjectDeadline(newDate);
+		System.out.println("Your new deadline has been successfully registered");
+		System.out.println(newProjectObject.displayProject() + "\n");
 	}
 
-	public static int projNum() {// Project Number
+	public static void outstandingBalanceChange(Project newProjectObject) {
+		System.out.println("Enter the new balance: ");
+		Scanner newBalanceInput = new Scanner(System.in);
+		float newBalance = newBalanceInput.nextFloat();
+		newProjectObject.setCurrBalance(newBalance);
+	}
+
+	public static void fileReaderMethod() {
+		try {
+			File savedProjects = new File("CompletedProjects.txt");
+			Scanner fileReader = new Scanner(savedProjects);
+			while (fileReader.hasNext()) {
+				System.out.println(fileReader.nextLine() + "\n");
+			}
+			fileReader.close();
+		} catch (IOException e) {
+			System.out.println("An error has occured in attempting to read he file");
+		}
+	}
+
+	public static void contractorEmailAddressChange(Contractor newContractor) {
+		System.out.println("Enter the new email address:");
+		Scanner newEmailAddressInput = new Scanner(System.in);
+		String newEmailAddress = newEmailAddressInput.nextLine();
+		newContractor.setEmailAddress(newEmailAddress);
+		System.out.println("New email address registered!\n");
+		System.out.println(newContractor.displayPerson());
+	}
+
+	public static void contractorTelephoneChange(Contractor newContractor) {
+		System.out.println("Enter the new telephone number:");
+		Scanner newTelephoneNumberInput = new Scanner(System.in);
+		int newTelephoneNumber = newTelephoneNumberInput.nextInt();
+		newContractor.setTelephoneNumber(newTelephoneNumber);
+		System.out.println("New telephone number registered!\n");
+		System.out.println(newContractor.displayPerson());
+	}
+
+	public static Contractor contractorObjectCreation() {
+		System.out.println("Please enter the following details to register a new contractor: \n");
+		String nameOfContractor = contractorName();
+		int telephoneNumberOfContractor = contractorTelephoneNumber();
+		String emailAddressOfContractor = contractorEmailAddress();
+		String physicalAddressOfContractor = contractorPhysicalAddress();
+		Contractor newContractor = new Contractor(nameOfContractor, telephoneNumberOfContractor,
+				emailAddressOfContractor, physicalAddressOfContractor);
+		System.out.println("New contractor registered!\n");
+		return newContractor;
+	}
+
+	public static void writeToFile(String projectName, int projectNumber, String buildingType,
+			String physicalAddressOfProject, int erfNumberForProject, float projectFee, float outstandingBalance,
+			String projectDeadline, String fileName) {
+		try {
+			Formatter outputFile = new Formatter(fileName);
+			outputFile.format(
+					"Project Name: %s%nProject Number: %d%nBuilding Type: %s%nPhysical Address: %s%n"
+							+ "ERF Number: %d%nProject Fee: %f%nOutstanding Balance: %f%nProject Deadline: %s%n",
+							projectName, projectNumber, buildingType, physicalAddressOfProject, erfNumberForProject,
+							projectFee, outstandingBalance, projectDeadline);
+			outputFile.close();
+		} catch (IOException e) {
+			System.out.println("An error has occured writing to the file" + e);
+		}
+	}
+
+	public static void invoiceGeneration(Client newClientObject, float amountToPay) {
+		int invoiceNumber = (int) (Math.random() * 1000);
+		System.out.println("Invoice " + " " + invoiceNumber + "\n");
+		System.out.println(newClientObject.displayPerson() + "\n");
+		System.out.println("Outstanding balance: " + " " + amountToPay);
+	}
+
+	public static Client clientObjectCreation() {
+		String nameOfClient = customerName();
+		int telephoneOfClient = customerTelephoneNumber();
+		String emailAddressOfClient = customerEmailAddress();
+		String physicalAddressOfClient = customerPhysicalAddress();
+		Client newClientObject = new Client(nameOfClient, telephoneOfClient, emailAddressOfClient,
+				physicalAddressOfClient);
+		
+		return newClientObject;
+	}
+
+	// Methods to capture the details of the project
+	public static String projectNameCapture() {
+		System.out.println("The name of the project: ");// Name of the project
+			Scanner inputForName = new Scanner(System.in);
+			String nameForProject = inputForName.nextLine();
+		
+			return nameForProject;
+		
+		
+		
+
+		
+	}
+
+	public static int projectNumberCapture() {
 		System.out.println("The project number: ");
 		Scanner inputForNum = new Scanner(System.in);
 		int numForProject = inputForNum.nextInt();
 
 		return numForProject;
-
 	}
 
-	public static String buildType() {// Building type
+	public static String buildingTypeCapture() {
 		System.out.println("Building type (eg. Apartment, House etc.): ");
 		Scanner inputForBuild = new Scanner(System.in);
 		String buildingType = inputForBuild.nextLine();
@@ -192,7 +232,7 @@ public class UserInterface {
 		return buildingType;
 	}
 
-	public static String physicalAddress() {// Physical address of the project
+	public static String physicalAddressCapture() {
 		System.out.println("The physical address of the project: ");
 		Scanner inputForPhysAdd = new Scanner(System.in);
 		String physicalAddress = inputForPhysAdd.nextLine();
@@ -200,7 +240,7 @@ public class UserInterface {
 		return physicalAddress;
 	}
 
-	public static int erfNumber() {// ERF Number
+	public static int erfNumberCapture() {
 		System.out.println("The ERF number: ");
 		Scanner inputForErf = new Scanner(System.in);
 		int erf = inputForErf.nextInt();
@@ -208,23 +248,23 @@ public class UserInterface {
 		return erf;
 	}
 
-	public static float projFee() {// Total cost of the project
+	public static float projectFeeCapture() {
 		System.out.println("The total fee for the project: R ");
 		Scanner inputForProjFee = new Scanner(System.in);
 		float fees = inputForProjFee.nextFloat();
 
-		return fees;
+		return Math.round(fees);
 	}
 
-	public static float projBal() {// Outstanding balance of the project
+	public static float outstandingBalance() {
 		System.out.println("The fees still outstanding: R ");
 		Scanner inputForProjBal = new Scanner(System.in);
 		float balance = inputForProjBal.nextFloat();
 
-		return balance;
+		return Math.round(balance);
 	}
 
-	public static String dueDate() { // Deadline of the project
+	public static String projectDeadline() { 
 		System.out.println("The deadline for the project: " + "\n");
 		Scanner inputForDeadline = new Scanner(System.in);
 		String deadline = inputForDeadline.nextLine();
@@ -241,7 +281,7 @@ public class UserInterface {
 		return conName;
 	}
 
-	public static int contractorTelNum() {
+	public static int contractorTelephoneNumber() {
 		System.out.println("Contractor's telephone number: \n");
 		Scanner contrTele = new Scanner(System.in);
 		int conTele = contrTele.nextInt();
@@ -257,7 +297,7 @@ public class UserInterface {
 		return conEmail;
 	}
 
-	public static String contractorPhysAdd() {
+	public static String contractorPhysicalAddress() {
 		System.out.println("Contractor's physical address: ");
 		Scanner contrPhysAdd = new Scanner(System.in);
 		String conPhysAdd = contrPhysAdd.nextLine();
@@ -274,7 +314,7 @@ public class UserInterface {
 		return cliName;
 	}
 
-	public static int customerTelNum() {
+	public static int customerTelephoneNumber() {
 		System.out.println("Client's telephone number: \n");
 		Scanner clientTele = new Scanner(System.in);
 		int cliTele = clientTele.nextInt();
@@ -290,7 +330,7 @@ public class UserInterface {
 		return cliEmail;
 	}
 
-	public static String customerPhysAdd() {
+	public static String customerPhysicalAddress() {
 		System.out.println("Client's physical address: ");
 		Scanner clientPhysAdd = new Scanner(System.in);
 		String cliPhysAdd = clientPhysAdd.nextLine();
@@ -329,8 +369,7 @@ public class UserInterface {
 
 	public static void mainMenu() {
 		System.out.println("Please select one of the following options: \n");
-		System.out.println(" 1. Project registration\n" + " 2. Contractor registration\n" + " 3. View all projects\n"
-				+ " 4. Search for a project");
+		System.out.println(" 1. Project registration\n" + " 2. Contractor registration\n" + " 3. View all projects\n");
 	}
 
 }

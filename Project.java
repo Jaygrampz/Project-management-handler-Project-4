@@ -1,4 +1,6 @@
+
 public class Project {
+
 	// Attributes
 	private String projectName;
 	private int projectNumber;
@@ -10,7 +12,7 @@ public class Project {
 	private String projectDeadline;
 
 	// Methods
-	public String displayProj() {
+	public String displayProject() {
 		String details = "Project name: " + projectName;
 		details += "\nProject number: " + projectNumber;
 		details += "\nBuidling type: " + buildingType;
@@ -23,6 +25,11 @@ public class Project {
 		return details;
 	}
 
+	@Override
+	public String toString() {
+		return projectName + projectNumber + buildingType + physicalAddress + erfNumber + projectFee + currBalance
+				+ projectDeadline;
+	}
 
 	// Getters
 
@@ -47,11 +54,11 @@ public class Project {
 	}
 
 	public float getProjectFee() {
-		return projectFee;
+		return Math.round(projectFee);
 	}
 
 	public float getCurrBalance() {
-		return currBalance;
+		return Math.round(currBalance);
 	}
 
 	public String getProjectDeadline() {
@@ -81,17 +88,16 @@ public class Project {
 	}
 
 	public void setProjectFee(float projectFee) {
-		this.projectFee = projectFee;
+		this.projectFee = Math.round(projectFee);
 	}
 
 	public void setCurrBalance(float currBalance) {
-		this.currBalance = currBalance;
+		this.currBalance = Math.round(currBalance);
 	}
 
 	public void setProjectDeadline(String projectDeadline) {
 		this.projectDeadline = projectDeadline;
 	}
-
 
 	// Constructor
 	public Project(String projectName, int projectNumber, String buildingType, String physicalAddress, int erfNumber,
@@ -105,6 +111,10 @@ public class Project {
 		this.currBalance = currBalance;
 		this.projectDeadline = projectDeadline;
 	}
-	
+
+	public String toString(Project newProject) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
