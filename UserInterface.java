@@ -29,7 +29,7 @@ public class UserInterface {
 				Project newProjectObject = new Project(projectName, projectNumber, buildingType,
 						physicalAddressOfProject, erfNumberForProject, projectFee, outstandingBalance, projectDeadline);
 				System.out.println("Your project has been successfully registered");
-				System.out.println(newProjectObject.displayProj() + "\n");
+				System.out.println(newProjectObject.displayProject() + "\n");
 
 				/* This piece of code deals with changing the deadline date */
 				System.out.println("This is your current deadline date: " + " " + newProjectObject.getProjectDeadline()
@@ -115,7 +115,7 @@ public class UserInterface {
 		String newDate = newDateEntry.nextLine();
 		newProjectObject.setProjectDeadline(newDate);
 		System.out.println("Your new deadline has been successfully registered");
-		System.out.println(newProjectObject.displayProj() + "\n");
+		System.out.println(newProjectObject.displayProject() + "\n");
 	}
 
 	public static void outstandingBalanceChange(Project newProjectObject) {
@@ -253,7 +253,7 @@ public class UserInterface {
 		Scanner inputForProjFee = new Scanner(System.in);
 		float fees = inputForProjFee.nextFloat();
 
-		return Math.round(fees * 100) / 100;
+		return Math.round(fees);
 	}
 
 	public static float outstandingBalance() {
@@ -261,7 +261,7 @@ public class UserInterface {
 		Scanner inputForProjBal = new Scanner(System.in);
 		float balance = inputForProjBal.nextFloat();
 
-		return Math.round(balance * 100) / 100;
+		return Math.round(balance);
 	}
 
 	public static String projectDeadline() { 

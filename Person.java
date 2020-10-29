@@ -7,7 +7,7 @@ public class Person {
 
 	// Methods
 	public String displayPerson() {
-		String details = "Contractor name: " + getName();
+		String details = "Name: " + getName();
 		details += "\nTelephone number: " + getTelephoneNumber();
 		details += "\nEmail address: " + getEmailAddress();
 		details += "\nPhysical Address: " + getPhysicalAddress();

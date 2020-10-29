@@ -12,7 +12,7 @@ public class Project {
 	private String projectDeadline;
 
 	// Methods
-	public String displayProj() {
+	public String displayProject() {
 		String details = "Project name: " + projectName;
 		details += "\nProject number: " + projectNumber;
 		details += "\nBuidling type: " + buildingType;
@@ -54,11 +54,11 @@ public class Project {
 	}
 
 	public float getProjectFee() {
-		return projectFee;
+		return Math.round(projectFee);
 	}
 
 	public float getCurrBalance() {
-		return currBalance;
+		return Math.round(currBalance);
 	}
 
 	public String getProjectDeadline() {
@@ -88,11 +88,11 @@ public class Project {
 	}
 
 	public void setProjectFee(float projectFee) {
-		this.projectFee = projectFee;
+		this.projectFee = Math.round(projectFee);
 	}
 
 	public void setCurrBalance(float currBalance) {
-		this.currBalance = currBalance;
+		this.currBalance = Math.round(currBalance);
 	}
 
 	public void setProjectDeadline(String projectDeadline) {
