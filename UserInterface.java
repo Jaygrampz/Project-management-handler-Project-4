@@ -4,8 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.IllegalFormatException;
+import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,6 +113,14 @@ public class UserInterface {
 //						System.out.println(projects);
 //					}
 
+//				FileWriter writer = new FileWriter(fileName, true);
+//				BufferedWriter output = new BufferedWriter(writer);
+//				int arrayListSize = projectObjects.size();
+//				for (int i = 0; i < arrayListSize; i++) {
+//					output.write("\n" + projectObjects.get(i) + "\n");
+//				}
+//				output.close();
+
 			} else if (userMainMenuChoice == 4) {
 				// Descriptive message here
 				String fileName = "CompletedProjects.txt";
@@ -123,17 +133,18 @@ public class UserInterface {
 					List<String> projectObjects = new ArrayList<String>();
 					dataImporter(fileName, projectObjects);
 
-					Iterator<String> listIterator = projectObjects.iterator();
-					System.out.println("List of projects: ");
-					while (listIterator.hasNext()) {
-						System.out.println(listIterator.next());
+					Iterator<String> iterator1 = projectObjects.iterator();
+					System.out.println("Here is a list of exisiting projects: ");
+					while (iterator1.hasNext()) {
+						System.out.println(iterator1.next());
 					}
 
-					System.out.println("Would you like to add a project to the list?\n 1 - Yes\n 2 - No");
-					projectObjects.clear();//List is cleared to not overwrite
-					Scanner projectAdd = new Scanner(System.in);
-					int projectAddChoice = projectAdd.nextInt();
-					if (projectAddChoice == 1) {
+					System.out.println("Would you like to perfrom the following operations?"
+							+ "\n 1 - Add a project to the list\n 2 - Edit a project on the list?");
+					Scanner projectModifierPrompt = new Scanner(System.in);
+					int projectModifierChoice = projectModifierPrompt.nextInt();
+					if (projectModifierChoice == 1) {
+						projectObjects.clear();// List is cleared to not overwrite
 						String projectName = projectNameCapture();
 						int projectNumber = projectNumberCapture();
 						String buildingType = buildingTypeCapture();
@@ -149,13 +160,55 @@ public class UserInterface {
 						System.out.println(projectObjects);
 					}
 
-					FileWriter writer = new FileWriter(fileName, true);
-					BufferedWriter output = new BufferedWriter(writer);
-					int arrayListSize = projectObjects.size();
-					for (int i = 0; i < arrayListSize; i++) {
-						output.write("\n" + projectObjects.get(i) + "\n");
+					else if (projectModifierChoice == 2) {
+						Iterator<String> iterator2 = projectObjects.iterator();
+						System.out.println("Here is a list of exisiting projects: ");
+						while (iterator2.hasNext()) {
+							System.out.println(iterator2.next());
+						}
+						System.out.println("You are able to change the deadline and the outstanding balance!");
+						System.out.println("Select a project you would like to edit: ");
+						Scanner projectSelect = new Scanner(System.in);
+						int userSelection = projectSelect.nextInt() - 1;
+						List<String> projectToEdit = new ArrayList<String>();
+						String[] splitString = new String[7];
+						splitString = stringSplitter(projectObjects, splitString, userSelection);
+						substringsToList(splitString, projectToEdit);
+						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
+						Scanner updateDeadlinePrompt = new Scanner(System.in);
+						try {
+							int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
+							if (updateDeadlineChoice == 1) {
+								deadlineChange(projectToEdit);
+								System.out.println(projectToEdit);
+							}
+
+						} catch (InputMismatchException e) {
+							System.out.println("Invalid entry. Please enter a number");
+						}
+
+						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
+						Scanner outstandingBalancePrompt = new Scanner(System.in);
+						try {
+							int outstandingBalanceChoice = outstandingBalancePrompt.nextInt();
+							if (outstandingBalanceChoice == 1) {
+								outstandingBalanceChange(projectToEdit);
+//								System.out.println(projectToEdit);
+							}
+
+						} catch (InputMismatchException e) {
+							System.out.println("Invalid entry");
+						}
+
+						projectObjects.remove(userSelection);
+						String joinedString = stringJoiner(projectToEdit.get(0), projectToEdit.get(1), projectToEdit.get(2),
+								projectToEdit.get(3), projectToEdit.get(4), projectToEdit.get(5), projectToEdit.get(6), projectToEdit.get(7));
+						projectObjects.add(userSelection, joinedString);
+						
+
 					}
-					output.close();
+//
+//					
 
 					/*
 					 * In order to edit an individual element, the projects must be split. Therefore
@@ -163,10 +216,6 @@ public class UserInterface {
 					 * separate substrings. The substring stored in the splitString array are then
 					 * added to an arraylist called projects to edit.
 					 */
-					String[] splitString = new String[7];
-					splitString = stringSplitter(projectObjects, splitString);
-					List<String> projectsToEdit = new ArrayList<String>();
-					substringsToList(splitString, projectsToEdit);
 
 				} catch (Exception e) {
 					System.out.println("An error has occured during this operation");
@@ -181,6 +230,17 @@ public class UserInterface {
 
 		}
 
+	}
+//"%s, " + "%s, " + "%s, " + "%s, " + "%s,  " + "%s, " + "%s, " + "%s"
+	//;
+	private static String stringJoiner(String name, String number, String building, String address, String erf,
+			String fee, String balance, String deadline) {
+		String stringJoined = String.join(", ", name, number, building, address, erf, fee,
+				balance, deadline);
+				
+
+		return stringJoined;
+		
 	}
 
 	public static String stringFormatter(String projectName, int projectNumber, String buildingType,
@@ -199,39 +259,54 @@ public class UserInterface {
 		}
 	}
 
-	public static String[] stringSplitter(List<String> list, String[] arrayOfStrings) {
-		for (String i : list) {
-			arrayOfStrings = i.split(", ");
-		}
+	public static String[] stringSplitter(List<String> list, String[] arrayOfStrings, int userChoice) {
+		arrayOfStrings = list.get(userChoice).split(", ");
+
 		return arrayOfStrings;
 	}
 
 	public static void dataImporter(String fileName, List<String> list) throws FileNotFoundException {
-		Scanner importer = new Scanner(new File(fileName));
-		while (importer.hasNext()) {
-			list.add(importer.nextLine() + "\n");
+		try {
+			Scanner importer = new Scanner(new File(fileName));
+			while (importer.hasNext()) {
+				list.add(importer.nextLine() + "\n");
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("File could not be found");
+		} catch (IllegalStateException e) {
+			System.out.println("The Scanner object is closed");
+		} catch (NullPointerException e) {
+			System.out.println("File name not specified!");
 		}
-	}
 
-	public static void dataImporter2(String fileName, List<String> arrayList1, List<String> arrayList2)
-			throws FileNotFoundException {
-		Scanner importer = new Scanner(new File(fileName));
-		while (importer.hasNext()) {
-			arrayList1.add(importer.nextLine());
-		}
-		for (Object i : arrayList1) {
-			arrayList2.add((String) i);
-		}
-		arrayList1.clear();
 	}
 
 	public static <E> void deadlineChange(List<String> list) {
-		System.out.println("Enter the new date: ");
+		System.out.println("Enter the new deadline (dd/mm/yyyy): ");
 		Scanner newDateEntry = new Scanner(System.in);
-		String newDate = newDateEntry.nextLine();
-		list.remove(7);
-		list.add(7, newDate);
-		System.out.println("Your new deadline has been successfully registered");
+		try {
+			String newDate = newDateEntry.nextLine();
+			list.remove(7);
+			list.add(7, newDate);
+			System.out.println("Your new deadline has been successfully registered");
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid entry!");
+		}
+
+	}
+
+	public static <E> void outstandingBalanceChange(List<String> list) {
+		System.out.println("Enter the new balance: ");
+		Scanner newBalanceEntry = new Scanner(System.in);
+		try {
+			float newBalanceFloat = newBalanceEntry.nextFloat();
+			String newBalance = String.valueOf(newBalanceFloat);
+			list.remove(6);
+			list.add(6, newBalance);
+			System.out.println("Your new deadline has been successfully registered");
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid entry!");
+		}
 
 	}
 
