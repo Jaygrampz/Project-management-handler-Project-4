@@ -1,12 +1,14 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.IllegalFormatException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -92,57 +94,135 @@ public class UserInterface {
 				System.out.println("The projects captured into the system: \n");
 				fileReaderMethod();
 
-			} else if (userMainMenuChoice == 4) {
-				String fileName = "CompletedProjects.txt";
-				// Reading data from the file into the ArrayList
-				try {
-					// This ArrayList temporarily stores the split string from the file
-					List<String> temporaryList = new ArrayList<String>();
-					Scanner importer = new Scanner(new File(fileName));
-					while (importer.hasNext()) {
-						temporaryList.add(importer.nextLine());
-					}
-					// The string is split into an array. The substrings are then added to the
-					// projects list
-					String[] splitString = new String[7];
-					for (String i : temporaryList) {
-						splitString = i.split(", ");
-					}
-					List<String> projects = new ArrayList<String>();
-					for (String x : splitString) {
-						projects.add(x);
-					}
-					LinkedList<Object> linkedList = new LinkedList<>(temporaryList);
-					System.out.println(linkedList.get(2));
-					/*
-					 * INTENTION Prompt the user of the would like to update the details of the
-					 * project ie. deadline & outstanding balance Once the user has updated those
-					 * details, write it directly to the file
-					 */
-//					System.out.println("Would you like to update the current projects?\n 1 - Yes\n 2- No");
-//					Scanner updateProjectPrompt = new Scanner(System.in);
-//					int updateProjectChoice = updateProjectPrompt.nextInt();
-//					if (updateProjectChoice == 1) {
-//						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
-//						Scanner updateDeadlinePrompt = new Scanner(System.in);
-//						int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
-//						if (updateDeadlineChoice == 1) {
-//							deadlineChange(projects);
-//							System.out.println(projects);
-//						}
+				/*
+				 * INTENTION Prompt the user of the would like to update the details of the
+				 * project ie. deadline & outstanding balance Once the user has updated those
+				 * details, write it directly to the file
+				 */
+//				System.out.println("Would you like to update the current projects?\n 1 - Yes\n 2- No");
+//				Scanner updateProjectPrompt = new Scanner(System.in);
+//				int updateProjectChoice = updateProjectPrompt.nextInt();
+//				if (updateProjectChoice == 1) {
+//					System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
+//					Scanner updateDeadlinePrompt = new Scanner(System.in);
+//					int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
+//					if (updateDeadlineChoice == 1) {
+//						deadlineChange(projects);
+//						System.out.println(projects);
+//					}
 
-				} catch (FileNotFoundException e) {
-					System.out.println("File not found!");
-				} catch (IndexOutOfBoundsException e) {
-					System.out.println("Index is out of bounds! Verify the size of the array");
-				} catch (NoSuchElementException e) {
-					System.out.println("No string was found!");
+			} else if (userMainMenuChoice == 4) {
+				// Descriptive message here
+				String fileName = "CompletedProjects.txt";
+				try {
+					/*
+					 * projectsObjects is the list of projects imported from the "CompletedProjects"
+					 * file. The data importer method scans the file and place the projects into
+					 * projectObjects
+					 */
+					List<String> projectObjects = new ArrayList<String>();
+					dataImporter(fileName, projectObjects);
+
+					Iterator<String> listIterator = projectObjects.iterator();
+					System.out.println("List of projects: ");
+					while (listIterator.hasNext()) {
+						System.out.println(listIterator.next());
+					}
+
+					System.out.println("Would you like to add a project to the list?\n 1 - Yes\n 2 - No");
+					projectObjects.clear();//List is cleared to not overwrite
+					Scanner projectAdd = new Scanner(System.in);
+					int projectAddChoice = projectAdd.nextInt();
+					if (projectAddChoice == 1) {
+						String projectName = projectNameCapture();
+						int projectNumber = projectNumberCapture();
+						String buildingType = buildingTypeCapture();
+						String physicalAddressOfProject = physicalAddressCapture();
+						int erfNumberForProject = erfNumberCapture();
+						float projectFee = projectFeeCapture();
+						float outstandingBalance = outstandingBalance();
+						String projectDeadline = projectDeadline();
+
+						projectObjects
+								.add(stringFormatter(projectName, projectNumber, buildingType, physicalAddressOfProject,
+										erfNumberForProject, projectFee, outstandingBalance, projectDeadline));
+						System.out.println(projectObjects);
+					}
+
+					FileWriter writer = new FileWriter(fileName, true);
+					BufferedWriter output = new BufferedWriter(writer);
+					int arrayListSize = projectObjects.size();
+					for (int i = 0; i < arrayListSize; i++) {
+						output.write("\n" + projectObjects.get(i) + "\n");
+					}
+					output.close();
+
+					/*
+					 * In order to edit an individual element, the projects must be split. Therefore
+					 * the stringSplitter object splits the string object from the commas into
+					 * separate substrings. The substring stored in the splitString array are then
+					 * added to an arraylist called projects to edit.
+					 */
+					String[] splitString = new String[7];
+					splitString = stringSplitter(projectObjects, splitString);
+					List<String> projectsToEdit = new ArrayList<String>();
+					substringsToList(splitString, projectsToEdit);
+
+				} catch (Exception e) {
+					System.out.println("An error has occured during this operation");
 				}
+//				} catch (IndexOutOfBoundsException e) {
+//					System.out.println("Index is out of bounds! Verify the size of the array");
+//				} catch (NoSuchElementException e) {
+//					System.out.println("No string was found!");
+//				}
 
 			}
 
 		}
 
+	}
+
+	public static String stringFormatter(String projectName, int projectNumber, String buildingType,
+			String physicalAddressOfProject, int erfNumberForProject, float projectFee, float outstandingBalance,
+			String projectDeadline) {
+		String newProj = String.format("%s, " + "%d, " + "%s, " + "%s, " + "%d,  " + "%f, " + "%f, " + "%s",
+				projectName, projectNumber, buildingType, physicalAddressOfProject, erfNumberForProject, projectFee,
+				outstandingBalance, projectDeadline);
+
+		return newProj;
+	}
+
+	public static void substringsToList(String[] array, List<String> list) {
+		for (String x : array) {
+			list.add(x);
+		}
+	}
+
+	public static String[] stringSplitter(List<String> list, String[] arrayOfStrings) {
+		for (String i : list) {
+			arrayOfStrings = i.split(", ");
+		}
+		return arrayOfStrings;
+	}
+
+	public static void dataImporter(String fileName, List<String> list) throws FileNotFoundException {
+		Scanner importer = new Scanner(new File(fileName));
+		while (importer.hasNext()) {
+			list.add(importer.nextLine() + "\n");
+		}
+	}
+
+	public static void dataImporter2(String fileName, List<String> arrayList1, List<String> arrayList2)
+			throws FileNotFoundException {
+		Scanner importer = new Scanner(new File(fileName));
+		while (importer.hasNext()) {
+			arrayList1.add(importer.nextLine());
+		}
+		for (Object i : arrayList1) {
+			arrayList2.add((String) i);
+		}
+		arrayList1.clear();
 	}
 
 	public static <E> void deadlineChange(List<String> list) {
