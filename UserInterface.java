@@ -1,15 +1,11 @@
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.IllegalFormatException;
 import java.util.InputMismatchException;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -146,91 +142,91 @@ public class UserInterface {
 					 */
 					System.out.println("Would you like to perfrom the following operations?"
 							+ "\n 1 - Add a project to the list\n 2 - Edit a project on the list?");
-					Scanner projectModifierPrompt = new Scanner(System.in);
-					int projectModifierChoice = projectModifierPrompt.nextInt();
-					if (projectModifierChoice == 1) {
-						String projectName = projectNameCapture();
-						int projectNumber = projectNumberCapture();
-						String buildingType = buildingTypeCapture();
-						String physicalAddressOfProject = physicalAddressCapture();
-						int erfNumberForProject = erfNumberCapture();
-						float projectFee = projectFeeCapture();
-						float outstandingBalance = outstandingBalance();
-						String projectDeadline = projectDeadline();
+//					Scanner projectModifierPrompt = new Scanner(System.in);
+//					int projectModifierChoice = projectModifierPrompt.nextInt();
+//					if (projectModifierChoice == 1) {
+					String projectName = projectNameCapture();
+					int projectNumber = projectNumberCapture();
+					String buildingType = buildingTypeCapture();
+					String physicalAddressOfProject = physicalAddressCapture();
+					int erfNumberForProject = erfNumberCapture();
+					float projectFee = projectFeeCapture();
+					float outstandingBalance = outstandingBalance();
+					String projectDeadline = projectDeadline();
 
-						projectObjects
-								.add(stringFormatter(projectName, projectNumber, buildingType, physicalAddressOfProject,
-										erfNumberForProject, projectFee, outstandingBalance, projectDeadline));
-						System.out.println(projectObjects);
-					} else if (projectModifierChoice == 2) {
-						// Display projects that are currently in the list
-						Iterator<String> iterator2 = projectObjects.iterator();
-						System.out.println("Here is a list of exisiting projects: ");
-						while (iterator2.hasNext()) {
-							System.out.println(iterator2.next());
-						}
-						/*
-						 * In order to edit an individual element, the projects must be split. The user
-						 * is prompted to input which project they would like to edit from the
-						 * "projectObjects" ArrayList and their choice is stored in the variable
-						 * "userSelection". I have taken into account the difference between the index
-						 * of a project object and the user's selection of the object. The
-						 * stringSplitter object splits the string object from the commas into separate
-						 * substrings. The substrings are stored in the splitString Array and then added
-						 * to an ArrayList called "projectsToEdit".
-						 */
-						System.out.println("You are able to change the deadline and the outstanding balance!");
-						System.out.println("Select a project you would like to edit: ");
-						Scanner projectSelect = new Scanner(System.in);
-						int userSelection = projectSelect.nextInt() - 1;
-						List<String> projectToEdit = new ArrayList<String>();
-						String[] splitString = new String[7];
-						splitString = stringSplitter(projectObjects, splitString, userSelection);
-						substringsToList(splitString, projectToEdit);
-						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
-						Scanner updateDeadlinePrompt = new Scanner(System.in);
-						/*
-						 * The deadline of the project is changed. The deadlineChange method is called.
-						 * The respective elements in the ArrayList are updated. The same logic is
-						 * applied below with the outstanding balance.
-						 */
-						try {
-							int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
-							if (updateDeadlineChoice == 1) {
-								deadlineChange(projectToEdit);
-								System.out.println(projectToEdit);
-							}
-
-						} catch (InputMismatchException e) {
-							System.out.println("Invalid entry. Please enter a number");
+					projectObjects
+							.add(stringFormatter(projectName, projectNumber, buildingType, physicalAddressOfProject,
+									erfNumberForProject, projectFee, outstandingBalance, projectDeadline));
+					System.out.println(projectObjects);
+//					} else if (projectModifierChoice == 2) {
+					// Display projects that are currently in the list
+					Iterator<String> iterator2 = projectObjects.iterator();
+					System.out.println("Here is a list of exisiting projects: ");
+					while (iterator2.hasNext()) {
+						System.out.println(iterator2.next());
+					}
+					/*
+					 * In order to edit an individual element, the projects must be split. The user
+					 * is prompted to input which project they would like to edit from the
+					 * "projectObjects" ArrayList and their choice is stored in the variable
+					 * "userSelection". I have taken into account the difference between the index
+					 * of a project object and the user's selection of the object. The
+					 * stringSplitter object splits the string object from the commas into separate
+					 * substrings. The substrings are stored in the splitString Array and then added
+					 * to an ArrayList called "projectsToEdit".
+					 */
+					System.out.println("You are able to change the deadline and the outstanding balance!");
+					System.out.println("Select a project you would like to edit: ");
+					Scanner projectSelect = new Scanner(System.in);
+					int userSelection = projectSelect.nextInt() - 1;
+					List<String> projectToEdit = new ArrayList<String>();
+					String[] splitString = new String[7];
+					splitString = stringSplitter(projectObjects, splitString, userSelection);
+					substringsToList(splitString, projectToEdit);
+					System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
+					Scanner updateDeadlinePrompt = new Scanner(System.in);
+					/*
+					 * The deadline of the project is changed. The deadlineChange method is called.
+					 * The respective elements in the ArrayList are updated. The same logic is
+					 * applied below with the outstanding balance.
+					 */
+					try {
+						int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
+						if (updateDeadlineChoice == 1) {
+							deadlineChange(projectToEdit);
+							System.out.println(projectToEdit);
 						}
 
-						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
-						Scanner outstandingBalancePrompt = new Scanner(System.in);
-						try {
-							int outstandingBalanceChoice = outstandingBalancePrompt.nextInt();
-							if (outstandingBalanceChoice == 1) {
-								outstandingBalanceChange(projectToEdit);
-//								System.out.println(projectToEdit);
-							}
-
-						} catch (InputMismatchException e) {
-							System.out.println("Invalid entry");
-						}
-						/*
-						 * Here the project which the user has selected from the projectObject list is
-						 * removed and replaced by the substrings,joined together, using the
-						 * stringJoiner method.
-						 */
-						projectObjects.remove(userSelection);
-						String joinedString = stringJoiner(projectToEdit.get(0), projectToEdit.get(1),
-								projectToEdit.get(2), projectToEdit.get(3), projectToEdit.get(4), projectToEdit.get(5),
-								projectToEdit.get(6), projectToEdit.get(7));
-						projectObjects.add(userSelection, joinedString);
-
+					} catch (InputMismatchException e) {
+						System.out.println("Invalid entry. Please enter a number");
 					}
 
-				} catch (Exception e) {
+					System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
+					Scanner outstandingBalancePrompt = new Scanner(System.in);
+					try {
+						int outstandingBalanceChoice = outstandingBalancePrompt.nextInt();
+						if (outstandingBalanceChoice == 1) {
+							outstandingBalanceChange(projectToEdit);
+//								System.out.println(projectToEdit);
+						}
+
+					} catch (InputMismatchException e) {
+						System.out.println("Invalid entry");
+					}
+					/*
+					 * Here the project which the user has selected from the projectObject list is
+					 * removed and replaced by the substrings,joined together, using the
+					 * stringJoiner method.
+					 */
+					projectObjects.remove(userSelection);
+					String joinedString = stringJoiner(projectToEdit.get(0), projectToEdit.get(1), projectToEdit.get(2),
+							projectToEdit.get(3), projectToEdit.get(4), projectToEdit.get(5), projectToEdit.get(6),
+							projectToEdit.get(7));
+					projectObjects.add(userSelection, joinedString);
+
+				}
+
+				catch (Exception e) {
 					System.out.println("An error has occured during this operation");
 				}
 //				} catch (IndexOutOfBoundsException e) {
@@ -245,12 +241,14 @@ public class UserInterface {
 
 	}
 
-//"%s, " + "%s, " + "%s, " + "%s, " + "%s,  " + "%s, " + "%s, " + "%s"
-	// ;
 	private static String stringJoiner(String name, String number, String building, String address, String erf,
 			String fee, String balance, String deadline) {
-		String stringJoined = String.join(", ", name, number, building, address, erf, fee, balance, deadline);
-
+		String stringJoined = null;
+		try {
+			stringJoined = String.join(", ", name, number, building, address, erf, fee, balance, deadline);
+		} catch (NullPointerException e) {
+			System.out.println("No delimiter was found!");
+		}
 		return stringJoined;
 
 	}
@@ -258,21 +256,32 @@ public class UserInterface {
 	public static String stringFormatter(String projectName, int projectNumber, String buildingType,
 			String physicalAddressOfProject, int erfNumberForProject, float projectFee, float outstandingBalance,
 			String projectDeadline) {
-		String newProj = String.format("%s, " + "%d, " + "%s, " + "%s, " + "%d,  " + "%f, " + "%f, " + "%s",
-				projectName, projectNumber, buildingType, physicalAddressOfProject, erfNumberForProject, projectFee,
+		String newProjectString = null;
+		try { 
+			newProjectString = String.format("%s, " + "%d, " + "%s, " + "%s, " + "%d,  " + "%f, " + "%f, " + "%s",projectName, projectNumber, buildingType, physicalAddressOfProject, erfNumberForProject, projectFee,
 				outstandingBalance, projectDeadline);
-
-		return newProj;
+		} catch (IllegalFormatException e) {
+			System.out.println("String cannot be formatted!");
+		}
+		return newProjectString;
 	}
 
 	public static void substringsToList(String[] array, List<String> list) {
-		for (String x : array) {
-			list.add(x);
+		try {
+			for (String x : array)
+				list.add(x);
+		} catch (Exception e) {
+			System.out.println("An error ahs occured in attempting to add the substrings to the list!");
+
 		}
 	}
 
 	public static String[] stringSplitter(List<String> list, String[] arrayOfStrings, int userChoice) {
-		arrayOfStrings = list.get(userChoice).split(", ");
+		try {
+			arrayOfStrings = list.get(userChoice).split(", ");
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println("Please select a project on the list!");
+		}
 
 		return arrayOfStrings;
 	}
@@ -301,7 +310,7 @@ public class UserInterface {
 			list.remove(7);
 			list.add(7, newDate);
 			System.out.println("Your new deadline has been successfully registered");
-		} catch (InputMismatchException e) {
+		} catch (Exception e) {
 			System.out.println("Invalid entry!");
 		}
 
@@ -322,13 +331,6 @@ public class UserInterface {
 
 	}
 
-	public static void outstandingBalanceChange(Project newProjectObject) {
-		System.out.println("Enter the new balance: ");
-		Scanner newBalanceInput = new Scanner(System.in);
-		float newBalance = newBalanceInput.nextFloat();
-		newProjectObject.setCurrBalance(newBalance);
-	}
-
 	public static void fileReaderMethod() {
 		try {
 			File savedProjects = new File("CompletedProjects.txt");
@@ -337,7 +339,7 @@ public class UserInterface {
 				System.out.println(fileReader.nextLine() + "\n");
 			}
 			fileReader.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.out.println("An error has occured in attempting to read he file");
 		}
 	}
@@ -345,10 +347,15 @@ public class UserInterface {
 	public static void contractorEmailAddressChange(Contractor newContractor) {
 		System.out.println("Enter the new email address:");
 		Scanner newEmailAddressInput = new Scanner(System.in);
-		String newEmailAddress = newEmailAddressInput.nextLine();
-		newContractor.setEmailAddress(newEmailAddress);
-		System.out.println("New email address registered!\n");
-		System.out.println(newContractor.displayPerson());
+		try {
+			String newEmailAddress = newEmailAddressInput.nextLine();
+			newContractor.setEmailAddress(newEmailAddress);
+			System.out.println("New email address registered!\n");
+			System.out.println(newContractor.displayPerson());
+		} catch (InputMismatchException e) {
+			System.out.println("Invalid input! Please enter a valid email address.");
+		}
+
 	}
 
 	public static void contractorTelephoneChange(Contractor newContractor) {
@@ -407,169 +414,252 @@ public class UserInterface {
 	}
 
 	// Methods to capture the details of the project
+
 	public static String projectNameCapture() {
 		System.out.println("The name of the project: ");// Name of the project
 		Scanner inputForName = new Scanner(System.in);
-		String nameForProject = inputForName.nextLine();
+		String projectName = null;
+		try {
+			projectName = inputForName.nextLine();
 
-		return nameForProject;
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return projectName;
 
 	}
 
 	public static int projectNumberCapture() {
 		System.out.println("The project number: ");
-		Scanner inputForNum = new Scanner(System.in);
-		int numForProject = inputForNum.nextInt();
-
-		return numForProject;
+		Scanner inputForNumber = new Scanner(System.in);
+		int projectNumber = 0;
+		try {
+			projectNumber = inputForNumber.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use numbers.");
+		}
+		return projectNumber;
 	}
 
 	public static String buildingTypeCapture() {
 		System.out.println("Building type (eg. Apartment, House etc.): ");
-		Scanner inputForBuild = new Scanner(System.in);
-		String buildingType = inputForBuild.nextLine();
-
+		Scanner inputForBuilding = new Scanner(System.in);
+		String buildingType = null;
+		try {
+			buildingType = inputForBuilding.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
 		return buildingType;
 	}
 
 	public static String physicalAddressCapture() {
 		System.out.println("The physical address of the project: ");
-		Scanner inputForPhysAdd = new Scanner(System.in);
-		String physicalAddress = inputForPhysAdd.nextLine();
-
+		Scanner inputForAddress = new Scanner(System.in);
+		String physicalAddress = null;
+		try {
+			physicalAddress = inputForAddress.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
 		return physicalAddress;
 	}
 
 	public static int erfNumberCapture() {
 		System.out.println("The ERF number: ");
 		Scanner inputForErf = new Scanner(System.in);
-		int erf = inputForErf.nextInt();
-
+		int erf = 0;
+		try {
+			erf = inputForErf.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use numbers.");
+		}
 		return erf;
 	}
 
 	public static float projectFeeCapture() {
 		System.out.println("The total fee for the project: R ");
-		Scanner inputForProjFee = new Scanner(System.in);
-		float fees = inputForProjFee.nextFloat();
-
+		Scanner inputForProjectFee = new Scanner(System.in);
+		float fees = 0;
+		try {
+			fees = inputForProjectFee.nextFloat();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use numbers.");
+		}
 		return Math.round(fees);
 	}
 
 	public static float outstandingBalance() {
 		System.out.println("The fees still outstanding: R ");
-		Scanner inputForProjBal = new Scanner(System.in);
-		float balance = inputForProjBal.nextFloat();
-
+		Scanner inputForBalance = new Scanner(System.in);
+		float balance = 0;
+		try {
+			balance = inputForBalance.nextFloat();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use numbers.");
+		}
 		return Math.round(balance);
 	}
 
 	public static String projectDeadline() {
 		System.out.println("The deadline for the project: " + "\n");
 		Scanner inputForDeadline = new Scanner(System.in);
-		String deadline = inputForDeadline.nextLine();
-
+		String deadline = null;
+		try {
+			deadline = inputForDeadline.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
 		return deadline;
 	}
 
 	// Methods for capturing the details of the contractors
 	public static String contractorName() {
 		System.out.println("Contractor's name: \n");
-		Scanner contrName = new Scanner(System.in);
-		String conName = contrName.nextLine();
-
-		return conName;
+		Scanner contractorNamePrompt = new Scanner(System.in);
+		String contractorName = null;
+		try {
+			contractorName = contractorNamePrompt.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return contractorName;
 	}
 
 	public static int contractorTelephoneNumber() {
 		System.out.println("Contractor's telephone number: \n");
-		Scanner contrTele = new Scanner(System.in);
-		int conTele = contrTele.nextInt();
-
-		return conTele;
+		Scanner contractorTelephonePrompt = new Scanner(System.in);
+		int contractorTelephone = 0;
+		try {
+			contractorTelephone = contractorTelephonePrompt.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use numbers.");
+		}
+		return contractorTelephone;
 	}
 
 	public static String contractorEmailAddress() {
 		System.out.println("Contractor's email address: \n");
-		Scanner contrEmail = new Scanner(System.in);
-		String conEmail = contrEmail.nextLine();
-
-		return conEmail;
+		Scanner contractorEmailPrompt = new Scanner(System.in);
+		String contractorEmail = null;
+		try {
+			contractorEmail = contractorEmailPrompt.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return contractorEmail;
 	}
 
 	public static String contractorPhysicalAddress() {
 		System.out.println("Contractor's physical address: ");
-		Scanner contrPhysAdd = new Scanner(System.in);
-		String conPhysAdd = contrPhysAdd.nextLine();
-
-		return conPhysAdd;
+		Scanner contractorAddressPrompt = new Scanner(System.in);
+		String contractorAddress = null;
+		try {
+			contractorAddress = contractorAddressPrompt.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return contractorAddress;
 	}
 
 	// Methods for capturing the details of the customers
 	public static String customerName() {
 		System.out.println("Customer's name: \n");
-		Scanner clientName = new Scanner(System.in);
-		String cliName = clientName.nextLine();
-
-		return cliName;
+		Scanner clientNamePrompt = new Scanner(System.in);
+		String clientName = null;
+		try {
+			clientName = clientNamePrompt.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return clientName;
 	}
 
 	public static int customerTelephoneNumber() {
 		System.out.println("Client's telephone number: \n");
-		Scanner clientTele = new Scanner(System.in);
-		int cliTele = clientTele.nextInt();
-
-		return cliTele;
+		Scanner clientTelephonePrompt = new Scanner(System.in);
+		int clientTelephone = 0;
+		try {
+			clientTelephone = clientTelephonePrompt.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use numbers.");
+		}
+		return clientTelephone;
 	}
 
 	public static String customerEmailAddress() {
 		System.out.println("Client's email address: \n");
-		Scanner clientEmail = new Scanner(System.in);
-		String cliEmail = clientEmail.nextLine();
-
-		return cliEmail;
+		Scanner clientEmailPrompt = new Scanner(System.in);
+		String clientEmail = null;
+		try {
+			clientEmail = clientEmailPrompt.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return clientEmail;
 	}
 
 	public static String customerPhysicalAddress() {
 		System.out.println("Client's physical address: ");
-		Scanner clientPhysAdd = new Scanner(System.in);
-		String cliPhysAdd = clientPhysAdd.nextLine();
-
-		return cliPhysAdd;
+		Scanner clientAddressPrompt = new Scanner(System.in);
+		String clientAddress = null;
+		try {
+			clientAddress = clientAddressPrompt.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return clientAddress;
 	}
 
 	// Methods for capturing the details of the architect
 	public static String architectName() {
-		Scanner archName = new Scanner(System.in);
-		String arcName = archName.nextLine();
-
-		return arcName;
+		Scanner architectNamePrompt = new Scanner(System.in);
+		String architectName = null;
+		try {
+			architectName = architectNamePrompt.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return architectName;
 	}
 
 	public static int architectTelNum() {
-		Scanner archTele = new Scanner(System.in);
-		int arcTele = archTele.nextInt();
-
-		return arcTele;
+		Scanner architectTelephonePrompt = new Scanner(System.in);
+		int architectTelephone = 0;
+		try {
+			architectTelephone = architectTelephonePrompt.nextInt();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use numbers.");
+		}
+		return architectTelephone;
 	}
 
 	public static String architectEmailAddress() {
-		Scanner archEmail = new Scanner(System.in);
-		String arcEmail = archEmail.nextLine();
-
-		return arcEmail;
+		Scanner architectEmailPrompt = new Scanner(System.in);
+		String architectEmail = null;
+		try {
+			architectEmail = architectEmailPrompt.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return architectEmail;
 	}
 
 	public static String architectPhysAdd() {
-		Scanner archPhysAdd = new Scanner(System.in);
-		String arcPhysAdd = archPhysAdd.nextLine();
-
-		return arcPhysAdd;
+		Scanner architectAddressPrompt = new Scanner(System.in);
+		String architectAddress = null;
+		try {
+			architectAddress = architectAddressPrompt.nextLine();
+		} catch (InputMismatchException e) {
+			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
+		}
+		return architectAddress;
 	}
 
 	public static void mainMenu() {
 		System.out.println("Please select one of the following options: \n");
-		System.out.println(" 1. Project registration\n" + " 2. Contractor registration\n" + " 3. View all projects\n");
+		System.out.println(" 1. Project registration\n" + " 2. Contractor registration\n" + " 3. View all projects\n"
+				+ " 4. Project editor");
 	}
 
 }
