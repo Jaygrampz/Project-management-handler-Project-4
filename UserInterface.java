@@ -1,5 +1,7 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -119,7 +121,7 @@ public class UserInterface {
 
 			} else if (userMainMenuChoice == 4) {
 				// Descriptive message here
-				String fileName = "CompletedProjects.txt";
+				String projectFile = "CompletedProjects.txt";
 				try {
 					/*
 					 * projectsObjects is the list of projects imported from the "CompletedProjects"
@@ -127,13 +129,8 @@ public class UserInterface {
 					 * projectObjects
 					 */
 					List<String> projectObjects = new ArrayList<String>();
-					dataImporter(fileName, projectObjects);
-					// The projects are displayed here using an iterator
-					Iterator<String> iterator1 = projectObjects.iterator();
-					System.out.println("Here is a list of exisiting projects: ");
-					while (iterator1.hasNext()) {
-						System.out.println(iterator1.next());
-					}
+					dataImporter(projectFile, projectObjects);
+					displayProjects(projectObjects);
 					/*
 					 * The following piece of code deals with adding a new project to the list of
 					 * projects that have already been imported. The user is prompted to input the
@@ -142,103 +139,119 @@ public class UserInterface {
 					 */
 					System.out.println("Would you like to perfrom the following operations?"
 							+ "\n 1 - Add a project to the list\n 2 - Edit a project on the list?");
-//					Scanner projectModifierPrompt = new Scanner(System.in);
-//					int projectModifierChoice = projectModifierPrompt.nextInt();
-//					if (projectModifierChoice == 1) {
-					String projectName = projectNameCapture();
-					int projectNumber = projectNumberCapture();
-					String buildingType = buildingTypeCapture();
-					String physicalAddressOfProject = physicalAddressCapture();
-					int erfNumberForProject = erfNumberCapture();
-					float projectFee = projectFeeCapture();
-					float outstandingBalance = outstandingBalance();
-					String projectDeadline = projectDeadline();
+					Scanner projectModifierPrompt = new Scanner(System.in);
+					int projectModifierChoice = projectModifierPrompt.nextInt();
+					if (projectModifierChoice == 1) {
+						String projectName = projectNameCapture();
+						int projectNumber = projectNumberCapture();
+						String buildingType = buildingTypeCapture();
+						String physicalAddressOfProject = physicalAddressCapture();
+						int erfNumberForProject = erfNumberCapture();
+						float projectFee = projectFeeCapture();
+						float outstandingBalance = outstandingBalance();
+						String projectDeadline = projectDeadline();
 
-					projectObjects
-							.add(stringFormatter(projectName, projectNumber, buildingType, physicalAddressOfProject,
-									erfNumberForProject, projectFee, outstandingBalance, projectDeadline));
-					System.out.println(projectObjects);
-//					} else if (projectModifierChoice == 2) {
-					// Display projects that are currently in the list
-					Iterator<String> iterator2 = projectObjects.iterator();
-					System.out.println("Here is a list of exisiting projects: ");
-					while (iterator2.hasNext()) {
-						System.out.println(iterator2.next());
-					}
-					/*
-					 * In order to edit an individual element, the projects must be split. The user
-					 * is prompted to input which project they would like to edit from the
-					 * "projectObjects" ArrayList and their choice is stored in the variable
-					 * "userSelection". I have taken into account the difference between the index
-					 * of a project object and the user's selection of the object. The
-					 * stringSplitter object splits the string object from the commas into separate
-					 * substrings. The substrings are stored in the splitString Array and then added
-					 * to an ArrayList called "projectsToEdit".
-					 */
-					System.out.println("You are able to change the deadline and the outstanding balance!");
-					System.out.println("Select a project you would like to edit: ");
-					Scanner projectSelect = new Scanner(System.in);
-					int userSelection = projectSelect.nextInt() - 1;
-					List<String> projectToEdit = new ArrayList<String>();
-					String[] splitString = new String[7];
-					splitString = stringSplitter(projectObjects, splitString, userSelection);
-					substringsToList(splitString, projectToEdit);
-					System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
-					Scanner updateDeadlinePrompt = new Scanner(System.in);
-					/*
-					 * The deadline of the project is changed. The deadlineChange method is called.
-					 * The respective elements in the ArrayList are updated. The same logic is
-					 * applied below with the outstanding balance.
-					 */
-					try {
-						int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
-						if (updateDeadlineChoice == 1) {
-							deadlineChange(projectToEdit);
-							System.out.println(projectToEdit);
+						projectObjects
+								.add(stringFormatter(projectName, projectNumber, buildingType, physicalAddressOfProject,
+										erfNumberForProject, projectFee, outstandingBalance, projectDeadline));
+						System.out.println(projectObjects);
+					} else if (projectModifierChoice == 2) {
+						// Display projects that are currently in the list
+						displayProjects(projectObjects);
+						/*
+						 * In order to edit an individual element, the projects must be split. The user
+						 * is prompted to input which project they would like to edit from the
+						 * "projectObjects" ArrayList and their choice is stored in the variable
+						 * "userSelection". I have taken into account the difference between the index
+						 * of a project object and the user's selection of the object. The
+						 * stringSplitter object splits the string object from the commas into separate
+						 * substrings. The substrings are stored in the splitString Array and then added
+						 * to an ArrayList called "projectsToEdit".
+						 */
+						System.out.println("You are able to change the deadline and the outstanding balance!");
+						System.out.println("Select a project you would like to edit: ");
+						Scanner projectEditPrompt = new Scanner(System.in);
+						int projectEditChoice = projectEditPrompt.nextInt() - 1;
+						List<String> projectToEdit = new ArrayList<String>();
+						String[] splitString = new String[7];
+						splitString = stringSplitter(projectObjects, splitString, projectEditChoice);
+						substringsToList(splitString, projectToEdit);
+						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
+						Scanner updateDeadlinePrompt = new Scanner(System.in);
+						/*
+						 * The deadline of the project is changed. The deadlineChange method is called.
+						 * The respective elements in the ArrayList are updated. The same logic is
+						 * applied below with the outstanding balance.
+						 */
+						try {
+							int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
+							if (updateDeadlineChoice == 1) {
+								deadlineChange(projectToEdit);
+								System.out.println("Deadline has been successfully updated!\n" + projectToEdit.get(7));
+							}
+						} catch (InputMismatchException e) {
+							System.out.println("Invalid entry. Please enter a number");
 						}
 
-					} catch (InputMismatchException e) {
-						System.out.println("Invalid entry. Please enter a number");
-					}
-
-					System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
-					Scanner outstandingBalancePrompt = new Scanner(System.in);
-					try {
-						int outstandingBalanceChoice = outstandingBalancePrompt.nextInt();
-						if (outstandingBalanceChoice == 1) {
-							outstandingBalanceChange(projectToEdit);
-//								System.out.println(projectToEdit);
+						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
+						Scanner outstandingBalancePrompt = new Scanner(System.in);
+						try {
+							int outstandingBalanceChoice = outstandingBalancePrompt.nextInt();
+							if (outstandingBalanceChoice == 1) {
+								outstandingBalanceChange(projectToEdit);
+								System.out.println("Deadline has been successfully updated!\n" + projectToEdit.get(6));
+							}
+						} catch (InputMismatchException e) {
+							System.out.println("Invalid entry");
 						}
-
-					} catch (InputMismatchException e) {
-						System.out.println("Invalid entry");
+						/*
+						 * Here the project which the user has selected from the projectObject list is
+						 * removed and replaced by the substrings,joined together, using the
+						 * stringJoiner method. The joined string is added in the same position of the
+						 * removed project object
+						 */
+						projectObjects.remove(projectEditChoice);
+						String joinedString = stringJoiner(projectToEdit.get(0), projectToEdit.get(1),
+								projectToEdit.get(2), projectToEdit.get(3), projectToEdit.get(4), projectToEdit.get(5),
+								projectToEdit.get(6), projectToEdit.get(7));
+						projectObjects.add(projectEditChoice, joinedString);
+						/*This piece of code deals with appending the project the user has selected into the project file.*/
+						System.out.println("Select the project you would like to finalise: ");
+						displayProjects(projectObjects);
+						Scanner finalUpdatePrompt = new Scanner(System.in);
+						int finalUpdateChoice = finalUpdatePrompt.nextInt() - 1;
+						try {
+							appendToFile(projectFile, projectObjects, finalUpdateChoice);
+							System.out.println("Your project has been sucessfully registered!");
+						} catch (IOException e) {
+							System.out.println("An error has occured in attempting to write to the file!");
+						} catch (IndexOutOfBoundsException e) {
+							System.out.println("The project you have selected is not in the list!");
+						}
 					}
-					/*
-					 * Here the project which the user has selected from the projectObject list is
-					 * removed and replaced by the substrings,joined together, using the
-					 * stringJoiner method.
-					 */
-					projectObjects.remove(userSelection);
-					String joinedString = stringJoiner(projectToEdit.get(0), projectToEdit.get(1), projectToEdit.get(2),
-							projectToEdit.get(3), projectToEdit.get(4), projectToEdit.get(5), projectToEdit.get(6),
-							projectToEdit.get(7));
-					projectObjects.add(userSelection, joinedString);
-
-				}
-
-				catch (Exception e) {
+				} catch (Exception e) {
 					System.out.println("An error has occured during this operation");
 				}
-//				} catch (IndexOutOfBoundsException e) {
-//					System.out.println("Index is out of bounds! Verify the size of the array");
-//				} catch (NoSuchElementException e) {
-//					System.out.println("No string was found!");
-//				}
 
 			}
 
 		}
 
+	}
+
+	public static void appendToFile(String fileName, List<String> arrayList, int userSelection) throws IOException {
+		BufferedWriter output = new BufferedWriter(new FileWriter(fileName, true));
+		for (int i = 0; i < arrayList.size(); i++) {
+			output.write("\n" + arrayList.get(userSelection));
+		}
+	}
+
+	public static void displayProjects(List<String> arrayList) {
+		Iterator<String> iterator2 = arrayList.iterator();
+		System.out.println("Here is a list of exisiting projects: ");
+		while (iterator2.hasNext()) {
+			System.out.println(iterator2.next());
+		}
 	}
 
 	private static String stringJoiner(String name, String number, String building, String address, String erf,
@@ -257,9 +270,10 @@ public class UserInterface {
 			String physicalAddressOfProject, int erfNumberForProject, float projectFee, float outstandingBalance,
 			String projectDeadline) {
 		String newProjectString = null;
-		try { 
-			newProjectString = String.format("%s, " + "%d, " + "%s, " + "%s, " + "%d,  " + "%f, " + "%f, " + "%s",projectName, projectNumber, buildingType, physicalAddressOfProject, erfNumberForProject, projectFee,
-				outstandingBalance, projectDeadline);
+		try {
+			newProjectString = String.format("%s, " + "%d, " + "%s, " + "%s, " + "%d,  " + "%f, " + "%f, " + "%s",
+					projectName, projectNumber, buildingType, physicalAddressOfProject, erfNumberForProject, projectFee,
+					outstandingBalance, projectDeadline);
 		} catch (IllegalFormatException e) {
 			System.out.println("String cannot be formatted!");
 		}
