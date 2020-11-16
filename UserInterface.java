@@ -132,19 +132,23 @@ public class UserInterface {
 					 */
 					List<String> projectObjects = new ArrayList<String>();
 					dataImporter(fileName, projectObjects);
-
+					// The projects are displayed here using an iterator
 					Iterator<String> iterator1 = projectObjects.iterator();
 					System.out.println("Here is a list of exisiting projects: ");
 					while (iterator1.hasNext()) {
 						System.out.println(iterator1.next());
 					}
-
+					/*
+					 * The following piece of code deals with adding a new project to the list of
+					 * projects that have already been imported. The user is prompted to input the
+					 * details of the project. Once the details have been captured, it is stored in
+					 * the list of project objects, namely projectObjects, as one string.
+					 */
 					System.out.println("Would you like to perfrom the following operations?"
 							+ "\n 1 - Add a project to the list\n 2 - Edit a project on the list?");
 					Scanner projectModifierPrompt = new Scanner(System.in);
 					int projectModifierChoice = projectModifierPrompt.nextInt();
 					if (projectModifierChoice == 1) {
-						projectObjects.clear();// List is cleared to not overwrite
 						String projectName = projectNameCapture();
 						int projectNumber = projectNumberCapture();
 						String buildingType = buildingTypeCapture();
@@ -158,14 +162,23 @@ public class UserInterface {
 								.add(stringFormatter(projectName, projectNumber, buildingType, physicalAddressOfProject,
 										erfNumberForProject, projectFee, outstandingBalance, projectDeadline));
 						System.out.println(projectObjects);
-					}
-
-					else if (projectModifierChoice == 2) {
+					} else if (projectModifierChoice == 2) {
+						// Display projects that are currently in the list
 						Iterator<String> iterator2 = projectObjects.iterator();
 						System.out.println("Here is a list of exisiting projects: ");
 						while (iterator2.hasNext()) {
 							System.out.println(iterator2.next());
 						}
+						/*
+						 * In order to edit an individual element, the projects must be split. The user
+						 * is prompted to input which project they would like to edit from the
+						 * "projectObjects" ArrayList and their choice is stored in the variable
+						 * "userSelection". I have taken into account the difference between the index
+						 * of a project object and the user's selection of the object. The
+						 * stringSplitter object splits the string object from the commas into separate
+						 * substrings. The substrings are stored in the splitString Array and then added
+						 * to an ArrayList called "projectsToEdit".
+						 */
 						System.out.println("You are able to change the deadline and the outstanding balance!");
 						System.out.println("Select a project you would like to edit: ");
 						Scanner projectSelect = new Scanner(System.in);
@@ -176,6 +189,11 @@ public class UserInterface {
 						substringsToList(splitString, projectToEdit);
 						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
 						Scanner updateDeadlinePrompt = new Scanner(System.in);
+						/*
+						 * The deadline of the project is changed. The deadlineChange method is called.
+						 * The respective elements in the ArrayList are updated. The same logic is
+						 * applied below with the outstanding balance.
+						 */
 						try {
 							int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
 							if (updateDeadlineChoice == 1) {
@@ -199,23 +217,18 @@ public class UserInterface {
 						} catch (InputMismatchException e) {
 							System.out.println("Invalid entry");
 						}
-
+						/*
+						 * Here the project which the user has selected from the projectObject list is
+						 * removed and replaced by the substrings,joined together, using the
+						 * stringJoiner method.
+						 */
 						projectObjects.remove(userSelection);
-						String joinedString = stringJoiner(projectToEdit.get(0), projectToEdit.get(1), projectToEdit.get(2),
-								projectToEdit.get(3), projectToEdit.get(4), projectToEdit.get(5), projectToEdit.get(6), projectToEdit.get(7));
+						String joinedString = stringJoiner(projectToEdit.get(0), projectToEdit.get(1),
+								projectToEdit.get(2), projectToEdit.get(3), projectToEdit.get(4), projectToEdit.get(5),
+								projectToEdit.get(6), projectToEdit.get(7));
 						projectObjects.add(userSelection, joinedString);
-						
 
 					}
-//
-//					
-
-					/*
-					 * In order to edit an individual element, the projects must be split. Therefore
-					 * the stringSplitter object splits the string object from the commas into
-					 * separate substrings. The substring stored in the splitString array are then
-					 * added to an arraylist called projects to edit.
-					 */
 
 				} catch (Exception e) {
 					System.out.println("An error has occured during this operation");
@@ -231,16 +244,15 @@ public class UserInterface {
 		}
 
 	}
+
 //"%s, " + "%s, " + "%s, " + "%s, " + "%s,  " + "%s, " + "%s, " + "%s"
-	//;
+	// ;
 	private static String stringJoiner(String name, String number, String building, String address, String erf,
 			String fee, String balance, String deadline) {
-		String stringJoined = String.join(", ", name, number, building, address, erf, fee,
-				balance, deadline);
-				
+		String stringJoined = String.join(", ", name, number, building, address, erf, fee, balance, deadline);
 
 		return stringJoined;
-		
+
 	}
 
 	public static String stringFormatter(String projectName, int projectNumber, String buildingType,
