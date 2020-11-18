@@ -9,6 +9,7 @@ import java.util.IllegalFormatException;
 import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -94,23 +95,6 @@ public class UserInterface {
 				System.out.println("The projects captured into the system: \n");
 				fileReaderMethod();
 
-				/*
-				 * INTENTION Prompt the user of the would like to update the details of the
-				 * project ie. deadline & outstanding balance Once the user has updated those
-				 * details, write it directly to the file
-				 */
-//				System.out.println("Would you like to update the current projects?\n 1 - Yes\n 2- No");
-//				Scanner updateProjectPrompt = new Scanner(System.in);
-//				int updateProjectChoice = updateProjectPrompt.nextInt();
-//				if (updateProjectChoice == 1) {
-//					System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
-//					Scanner updateDeadlinePrompt = new Scanner(System.in);
-//					int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
-//					if (updateDeadlineChoice == 1) {
-//						deadlineChange(projects);
-//						System.out.println(projects);
-//					}
-
 //				FileWriter writer = new FileWriter(fileName, true);
 //				BufferedWriter output = new BufferedWriter(writer);
 //				int arrayListSize = projectObjects.size();
@@ -120,7 +104,6 @@ public class UserInterface {
 //				output.close();
 
 			} else if (userMainMenuChoice == 4) {
-				// Descriptive message here
 				String projectFile = "CompletedProjects.txt";
 				try {
 					/*
@@ -187,19 +170,17 @@ public class UserInterface {
 							int updateDeadlineChoice = updateDeadlinePrompt.nextInt();
 							if (updateDeadlineChoice == 1) {
 								deadlineChange(projectToEdit);
-								System.out.println("Deadline has been successfully updated!\n" + projectToEdit.get(7));
 							}
 						} catch (InputMismatchException e) {
 							System.out.println("Invalid entry. Please enter a number");
 						}
 
-						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
+						System.out.println("Would you like to change the outstanding balance?\n 1 - Yes\n 2 - No");
 						Scanner outstandingBalancePrompt = new Scanner(System.in);
 						try {
 							int outstandingBalanceChoice = outstandingBalancePrompt.nextInt();
 							if (outstandingBalanceChoice == 1) {
 								outstandingBalanceChange(projectToEdit);
-								System.out.println("Deadline has been successfully updated!\n" + projectToEdit.get(6));
 							}
 						} catch (InputMismatchException e) {
 							System.out.println("Invalid entry");
@@ -215,18 +196,19 @@ public class UserInterface {
 								projectToEdit.get(2), projectToEdit.get(3), projectToEdit.get(4), projectToEdit.get(5),
 								projectToEdit.get(6), projectToEdit.get(7));
 						projectObjects.add(projectEditChoice, joinedString);
-						/*This piece of code deals with appending the project the user has selected into the project file.*/
+						/*
+						 * This piece of code deals with appending the project the user has selected
+						 * into the project file.
+						 */
 						System.out.println("Select the project you would like to finalise: ");
 						displayProjects(projectObjects);
 						Scanner finalUpdatePrompt = new Scanner(System.in);
-						int finalUpdateChoice = finalUpdatePrompt.nextInt() - 1;
 						try {
+							int finalUpdateChoice = finalUpdatePrompt.nextInt() - 1;
 							appendToFile(projectFile, projectObjects, finalUpdateChoice);
 							System.out.println("Your project has been sucessfully registered!");
-						} catch (IOException e) {
-							System.out.println("An error has occured in attempting to write to the file!");
-						} catch (IndexOutOfBoundsException e) {
-							System.out.println("The project you have selected is not in the list!");
+						} catch (InputMismatchException e) {
+							System.out.println("Invalid input! Please enter a number.");
 						}
 					}
 				} catch (Exception e) {
@@ -239,10 +221,16 @@ public class UserInterface {
 
 	}
 
-	public static void appendToFile(String fileName, List<String> arrayList, int userSelection) throws IOException {
-		BufferedWriter output = new BufferedWriter(new FileWriter(fileName, true));
-		for (int i = 0; i < arrayList.size(); i++) {
-			output.write("\n" + arrayList.get(userSelection));
+	public static void appendToFile(String fileName, List<String> arrayList, int userSelection) {
+		try {
+			FileWriter writer = new FileWriter(fileName, true);
+			BufferedWriter output = new BufferedWriter(writer);
+			output.write("\n" + arrayList.get(userSelection).toString());
+			output.close();
+		} catch (IOException e) {
+			System.out.println("An error has occured in writing to the file!");
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println("Invalid input! The project you have selected was not found!");
 		}
 	}
 
@@ -263,7 +251,6 @@ public class UserInterface {
 			System.out.println("No delimiter was found!");
 		}
 		return stringJoined;
-
 	}
 
 	public static String stringFormatter(String projectName, int projectNumber, String buildingType,
@@ -286,7 +273,6 @@ public class UserInterface {
 				list.add(x);
 		} catch (Exception e) {
 			System.out.println("An error ahs occured in attempting to add the substrings to the list!");
-
 		}
 	}
 
@@ -296,7 +282,6 @@ public class UserInterface {
 		} catch (IndexOutOfBoundsException e) {
 			System.out.println("Please select a project on the list!");
 		}
-
 		return arrayOfStrings;
 	}
 
@@ -312,8 +297,9 @@ public class UserInterface {
 			System.out.println("The Scanner object is closed");
 		} catch (NullPointerException e) {
 			System.out.println("File name not specified!");
+		} catch(NoSuchElementException e) {
+			System.out.println("There is nothing left to read on the file.");
 		}
-
 	}
 
 	public static <E> void deadlineChange(List<String> list) {
@@ -323,11 +309,10 @@ public class UserInterface {
 			String newDate = newDateEntry.nextLine();
 			list.remove(7);
 			list.add(7, newDate);
-			System.out.println("Your new deadline has been successfully registered");
+			System.out.println("Deadline has been successfully updated!\n" + "New deadline: " + list.get(7));
 		} catch (Exception e) {
 			System.out.println("Invalid entry!");
 		}
-
 	}
 
 	public static <E> void outstandingBalanceChange(List<String> list) {
@@ -338,11 +323,10 @@ public class UserInterface {
 			String newBalance = String.valueOf(newBalanceFloat);
 			list.remove(6);
 			list.add(6, newBalance);
-			System.out.println("Your new deadline has been successfully registered");
+			System.out.println("Outstanding balance has been successfully updated!\n" + "New balance: " + list.get(6));
 		} catch (InputMismatchException e) {
 			System.out.println("Invalid entry!");
 		}
-
 	}
 
 	public static void fileReaderMethod() {
@@ -369,7 +353,6 @@ public class UserInterface {
 		} catch (InputMismatchException e) {
 			System.out.println("Invalid input! Please enter a valid email address.");
 		}
-
 	}
 
 	public static void contractorTelephoneChange(Contractor newContractor) {
@@ -440,7 +423,6 @@ public class UserInterface {
 			System.out.println("Invlaid Input! Please ensure that you use alphabetical characters.");
 		}
 		return projectName;
-
 	}
 
 	public static int projectNumberCapture() {
