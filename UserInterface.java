@@ -82,15 +82,14 @@ public class UserInterface {
 
 				System.out.println("Select a project to verify if it is overdue.");
 				Scanner overduePrompt = new Scanner(System.in);
-				int overdueChoice = overduePrompt.nextInt() - 1;
+				int overdueChoice = overduePrompt.nextInt();
 				List<String> projectDueDate = new ArrayList<String>();
 				String[] splitDates = null;
-				splitDates = stringSplitterForDates(fileProjects, splitDates, projectDueDate, overdueChoice);
+				splitDates = stringSplitterForDates(fileProjects, splitDates, overdueChoice);
 				substringsToList(splitDates, projectDueDate);
 				String dateFromProject = projectDueDate.get(7);
 
 				Date currentDate = new Date();
-				Date deadlines = null;
 				dateComparer(fileProjects, overdueChoice, dateFromProject, currentDate);
 			} else if (userMainMenuChoice == 3) {
 				String projectFile = "CompletedProjects.txt";
@@ -142,7 +141,7 @@ public class UserInterface {
 						System.out.println("You are able to change the deadline and the outstanding balance!");
 						System.out.println("Select a project you would like to edit: ");
 						Scanner projectEditPrompt = new Scanner(System.in);
-						int projectEditChoice = projectEditPrompt.nextInt() - 1;
+						int projectEditChoice = projectEditPrompt.nextInt();
 						List<String> projectToEdit = new ArrayList<String>();
 						String[] splitString = new String[7];
 						splitString = stringSplitterProjectEditor(projectObjects, splitString, projectEditChoice);
@@ -192,7 +191,7 @@ public class UserInterface {
 						displayProjects(projectObjects);
 						Scanner finalUpdatePrompt = new Scanner(System.in);
 						try {
-							int finalUpdateChoice = finalUpdatePrompt.nextInt() - 1;
+							int finalUpdateChoice = finalUpdatePrompt.nextInt();
 							float amountToPay = Float.parseFloat(projectToEdit.get(5))
 									- Float.parseFloat(projectToEdit.get(6));
 							Client newClientObject = clientObjectCreation();
@@ -222,7 +221,7 @@ public class UserInterface {
 	 * @param currentDate
 	 */
 	public static void dateComparer(List<String> list, int userChoice, String dateFromProject, Date currentDate) {
-		Date deadlines;
+		Date deadlines = null;
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 			deadlines = dateFormat.parse(dateFromProject);
@@ -317,8 +316,7 @@ public class UserInterface {
 		return arrayOfStrings;
 	}
 
-	public static String[] stringSplitterForDates(List<String> list, String[] arrayOfStrings, List<String> list2,
-			int userChoice) {
+	public static String[] stringSplitterForDates(List<String> list, String[] arrayOfStrings, int userChoice) {
 		try {
 			arrayOfStrings = list.get(userChoice).split(", ");
 		} catch (IndexOutOfBoundsException e) {
@@ -372,7 +370,7 @@ public class UserInterface {
 	}
 
 	public static void invoiceGeneration(Client newClientObject, float amountToPay) {
-		int invoiceNumber = (int) (Math.random() * 1000);
+		int invoiceNumber = (int) (Math.random() * 10000);
 		System.out.println("Invoice " + " " + invoiceNumber + "\n");
 		System.out.println(newClientObject.displayPerson() + "\n");
 		System.out.println("Outstanding balance: " + " " + amountToPay);
@@ -390,7 +388,6 @@ public class UserInterface {
 	}
 
 	// Methods to capture the details of the project
-
 	public static String projectNameCapture() {
 		System.out.println("The name of the project: ");// Name of the project
 		Scanner inputForName = new Scanner(System.in);
