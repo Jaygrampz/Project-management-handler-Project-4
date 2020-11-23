@@ -3,7 +3,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.IllegalFormatException;
 import java.util.InputMismatchException;
@@ -14,7 +18,7 @@ import java.util.Scanner;
 
 public class UserInterface {
 
-	@SuppressWarnings("resource")
+	
 	public static void main(String[] args) {
 
 		/* While loop to keep the program running */
@@ -91,17 +95,56 @@ public class UserInterface {
 					}
 				}
 			} else if (userMainMenuChoice == 3) {
-				/* This section of code deals with reading the file contents */
+				/* This section of code deals with the user having the ability to view the lists of projects
+				 * that are still to be completed and are overdue.
+				 */
 				System.out.println("The projects captured into the system: \n");
-				fileReaderMethod();
-
-//				FileWriter writer = new FileWriter(fileName, true);
-//				BufferedWriter output = new BufferedWriter(writer);
-//				int arrayListSize = projectObjects.size();
-//				for (int i = 0; i < arrayListSize; i++) {
-//					output.write("\n" + projectObjects.get(i) + "\n");
-//				}
-//				output.close();
+				String fileName = "CompletedProjects.txt";
+				List<String> systemProjects = new ArrayList<String>();
+				try {
+					dataImporter(fileName, systemProjects);
+				} catch (Exception e) {
+					System.out.println("An error has occured during this operation!");
+				}
+				System.out.println("The following projects are the projects that still to be completed: ");
+				displayProjects(systemProjects);
+				
+				System.out.println("Select a project to verify if it is overdue.");
+				Scanner overduePrompt = new Scanner(System.in);
+				int overdueChoice = overduePrompt.nextInt() - 1;
+				List<String> projectDueDate = new ArrayList<String>();
+				String[] splitDates = null;
+				splitDates = stringSplitterForDates(systemProjects, splitDates, projectDueDate, overdueChoice);
+				substringsToList(splitDates, projectDueDate);
+				String dateFromProject = projectDueDate.get(7);
+				
+				
+				Date todaysDate = new Date();
+				Date deadlines = null;
+				try {
+					SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+					deadlines = dateFormat.parse(dateFromProject);
+					if (deadlines.before(todaysDate)) {
+						System.out.println("This project is overdue!");
+					} else if (deadlines.after(todaysDate)) {
+						System.out.println("This project is still on track!");
+					}
+				} catch (ParseException e) {
+					System.out.println("String value could not be parsed!");;
+				} catch (NullPointerException e) {
+					System.out.println("An error has occured in trying to verify if the projects are overdue!");
+				}
+				
+				
+				
+				
+				
+			
+				
+				
+				
+				
+				
 
 			} else if (userMainMenuChoice == 4) {
 				String projectFile = "CompletedProjects.txt";
@@ -157,7 +200,7 @@ public class UserInterface {
 						int projectEditChoice = projectEditPrompt.nextInt() - 1;
 						List<String> projectToEdit = new ArrayList<String>();
 						String[] splitString = new String[7];
-						splitString = stringSplitter(projectObjects, splitString, projectEditChoice);
+						splitString = stringSplitterProjectEditor(projectObjects, splitString, projectEditChoice);
 						substringsToList(splitString, projectToEdit);
 						System.out.println("Would you like to change the deadline?\n 1 - Yes\n 2 - No");
 						Scanner updateDeadlinePrompt = new Scanner(System.in);
@@ -205,6 +248,12 @@ public class UserInterface {
 						Scanner finalUpdatePrompt = new Scanner(System.in);
 						try {
 							int finalUpdateChoice = finalUpdatePrompt.nextInt() - 1;
+							float amountToPay = Float.parseFloat(projectToEdit.get(5)) - Float.parseFloat(projectToEdit.get(6));
+							Client newClientObject = clientObjectCreation();
+							if (amountToPay > 0) {
+								invoiceGeneration(newClientObject, amountToPay);
+							}
+							
 							appendToFile(projectFile, projectObjects, finalUpdateChoice);
 							System.out.println("Your project has been sucessfully registered!");
 						} catch (InputMismatchException e) {
@@ -236,7 +285,6 @@ public class UserInterface {
 
 	public static void displayProjects(List<String> arrayList) {
 		Iterator<String> iterator2 = arrayList.iterator();
-		System.out.println("Here is a list of exisiting projects: ");
 		while (iterator2.hasNext()) {
 			System.out.println(iterator2.next());
 		}
@@ -276,7 +324,16 @@ public class UserInterface {
 		}
 	}
 
-	public static String[] stringSplitter(List<String> list, String[] arrayOfStrings, int userChoice) {
+	public static String[] stringSplitterProjectEditor(List<String> list, String[] arrayOfStrings, int userChoice) {
+		try {
+			arrayOfStrings = list.get(userChoice).split(", ");
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println("Please select a project on the list!");
+		}
+		return arrayOfStrings;
+	}
+	
+	public static String[] stringSplitterForDates(List<String> list, String[] arrayOfStrings, List<String> list2, int userChoice) {
 		try {
 			arrayOfStrings = list.get(userChoice).split(", ");
 		} catch (IndexOutOfBoundsException e) {
