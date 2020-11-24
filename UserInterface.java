@@ -287,7 +287,7 @@ public class UserInterface {
 	 * <p>
 	 * @param list    the arraylist which the date element is stored
 	 * @param userChoice    the selection of the user
-	 * @param projectDueDate    the deadline date of the project the user selected
+	 * @param dateFromProject    the deadline date of the project the user selected
 	 * @param currentDate     the current date
 	 */
 	public static void dateComparer(List<String> list, int userChoice, String dateFromProject, Date currentDate) {
@@ -400,7 +400,7 @@ public class UserInterface {
 	 * @param projectFee         the project fee
 	 * @param outstandingBalance      the outstanding balance of the project
 	 * @param projectDeadline      the deadline date of the project
-	 * @return
+	 * @return     the newly formatted string is returned
 	 * @see   Project
 	 */
 	public static String stringFormatter(String projectName, int projectNumber, String buildingType,
@@ -496,10 +496,11 @@ public class UserInterface {
 	 * This method changes the deadline date
 	 * the old deadline date is removed and is replaced
 	 * by the new date input by the user
-	 * @param <E>
 	 * @param list   the arraylist to which the deadline date is added to.
+	 * @param <E>    representing list type
 	 * @see stringSplitterProjectEditor
 	 * @see Project
+	 * 
 	 */
 	public static <E> void deadlineChange(List<String> list) {
 		System.out.println("Enter the new deadline (dd/mm/yyyy): ");
@@ -518,8 +519,8 @@ public class UserInterface {
 	 * This method changes outstanding balance
 	 * the old balance is removed and is replaced
 	 * by the new date input by the user
-	 * @param <E>
 	 * @param list    the arraylist to which the outstanding balance is added to.
+	 * @param <E>    representing list type
 	 * @see stringSplitterProjectEditor
 	 * @see Project
 	 */
