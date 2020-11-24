@@ -13,12 +13,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-
+/**
+ * This a project management program 
+ * where the user is able to register, store
+ * and modify a project.
+ * <p>
+ * @author Jesse Muka
+ * @version %I%,%G%
+ * 
+ * */
 public class UserInterface {
 
 	public static void main(String[] args) {
 
 		/* While loop to keep the program running */
+		/**
+		 * Program begins from here with a welcome message displayed to the user.
+		 * A boolean variable is initialized in order that the user would return
+		 * the the main menu once they had completed a particular operation such as registering
+		 * a new project or modifying an existing project
+		 * <p> */
 		System.out.println("Welcome to the Poised Project Registration Interface!\n");
 		boolean runningProgram = true;
 		while (runningProgram) {
@@ -26,6 +40,18 @@ public class UserInterface {
 			Scanner userMainMenuInput = new Scanner(System.in);
 			int userMainMenuChoice = userMainMenuInput.nextInt();
 			/* This section deals with the creation of the project object */
+			/**
+			 * The user will be prompted to input details relative to the class
+			 * fields found in the Project class. From there, the user is prompted
+			 * to enter the client's details relative to the fields in the Client
+			 * class. The client object will be used to generate an invoice.
+			 * The project object is finally written into a text file.
+			 * @see Project class
+			 * @see Client class
+			 * @see invoiceGeneration
+			 * @see appendToFileRegistration
+			 * @see stringFormatter
+			 * <p>*/
 			if (userMainMenuChoice == 1) {
 				System.out.println("To create a new project file, please enter the following details: \n");
 				String projectName = projectNameCapture();
@@ -62,6 +88,17 @@ public class UserInterface {
 									erfNumberForProject, projectFee, outstandingBalance, projectDeadline));
 					appendToFileRegistration(fileName, pendingToWrite);
 				}
+				/**
+				 * The user selects to view the projects that exist on
+				 * the text file. The data is read and stored in an arraylist.
+				 * The projects are displayed to the user in two ways. The first way is a simple way
+				 * using the displayProjects method. The second way in which
+				 * the projects are displayed is if a user selects a project
+				 * from the list view if it has surpassed its deadline date using
+				 * the dateComparer method.
+				 * @see dataImporter
+				 * @see displayProjects
+				 * @see dateComparer */
 			} else if (userMainMenuChoice == 2) {
 				/*
 				 * This section of code deals with the user having the ability to view the lists
@@ -98,6 +135,36 @@ public class UserInterface {
 				} catch (InputMismatchException e) {
 					System.out.println("Invalid input! Please enter a number!");
 				}
+				/**
+				 * The section deals with modifying existing projects.
+				 * The data is read and stored into the projectObjects arraylist.
+				 * using the dataImporter method. In the first section,
+				 * the user is able to enter details of a new project and add
+				 * it into the projectObjects arraylist.
+				 * <p>
+				 * The proceeding section enables the user to select a project from
+				 * projectObject arraylist in order to change either the deadline date
+				 * or the outstanding balance. The project, which is a string object,
+				 * is split from its delimiter using the stringSplitter method. This aids in specifically choosing the
+				 * deadline date or the outstanding balance and the substrings are stored
+				 * into the arraylist called projectToEdit. From this arraylist, the deadline 
+				 * or the outstandiing balance is removed and replaced with the respective 
+				 * user input using the deadlineChange or balnceChange methods.
+				 * The string is joined using the stringJoiner method and replaces
+				 * the old project in the projectObjects arraylist. From the 
+				 * projectObjects arraylist, the the user may select any project
+				 * which is appended to the text file.
+				 * @see dataImporter
+				 * @see displayProjects
+				 * @see stringSplitter
+				 * @see substringToList
+				 * @see stringFormatter
+				 * @see deadlineChange
+				 * @see balanceChange
+				 * @see stringJoiner
+				 * @see appendToFileModification
+				 * <p>
+				 */
 			} else if (userMainMenuChoice == 3) {
 				String projectFile = "CompletedProjects.txt";
 				try {
@@ -175,7 +242,7 @@ public class UserInterface {
 						try {
 							int outstandingBalanceChoice = outstandingBalancePrompt.nextInt();
 							if (outstandingBalanceChoice == 1) {
-								outstandingBalanceChange(projectToEdit);
+								balanceChange(projectToEdit);
 							}
 						} catch (InputMismatchException e) {
 							System.out.println("Invalid entry");
@@ -214,35 +281,14 @@ public class UserInterface {
 		}
 	}
 
-	/*
-	 * @param projects
-	 * @param userChoice
-	 * @param projectDueDate
-	 * @param currentDate
-	 */
-	public static void dateComparison(List<String> projects, int userChoice, String projectDueDate, Date currentDate) {
-		Date deadlines;
-		try {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-			deadlines = dateFormat.parse(projectDueDate);
-			if (deadlines.before(currentDate)) {
-				System.out.println(projects.get(userChoice));
-				System.out.println("This project is overdue!");
-			} else if (deadlines.after(currentDate)) {
-				System.out.println(projects.get(userChoice));
-			}
-		} catch (ParseException e) {
-			System.out.println("String value could not be parsed!");
-		} catch (NullPointerException e) {
-			System.out.println("No dates to be compared!");
-		}
-	}
-
-	/*
-	 * @param list
-	 * @param userChoice
-	 * @param dateFromProject
-	 * @param currentDate
+	/**
+	 * This method compares the current date with a user
+	 * selected project
+	 * <p>
+	 * @param list    the arraylist which the date element is stored
+	 * @param userChoice    the selection of the user
+	 * @param projectDueDate    the deadline date of the project the user selected
+	 * @param currentDate     the current date
 	 */
 	public static void dateComparer(List<String> list, int userChoice, String dateFromProject, Date currentDate) {
 		Date deadlines = null;
@@ -263,6 +309,14 @@ public class UserInterface {
 		}
 	}
 
+	/**
+	 * This method appends a user selected project
+	 * that has been modified.
+	 * <p>
+	 * @param fileName   destination file
+	 * @param arrayList   arraylist from which the project is selected from
+	 * @param userSelection   selection of the user used to get the project object from arraylist
+	 */
 	public static void appendToFileModification(String fileName, List<String> arrayList, int userSelection) {
 		try {
 			FileWriter writer = new FileWriter(fileName, true);
@@ -276,6 +330,13 @@ public class UserInterface {
 		}
 	}
 
+	/**
+	 * This method writes a new project that has been registered
+	 * by the user. 
+	 * 
+	 * @param fileName  the destination file
+	 * @param arrayList  the arraylist which the project object is temporarily stored
+	 */
 	public static void appendToFileRegistration(String fileName, List<String> arrayList) {
 		try {
 			FileWriter writer = new FileWriter(fileName, true);
@@ -289,6 +350,13 @@ public class UserInterface {
 		}
 	}
 
+	/**
+	 * This method displays the projects that are stored in an arraylist,
+	 * the method iterates through an arraylist to display the projects
+	 * to a user
+	 * 
+	 * @param arrayList    the arraylist in which the projects are imported from a file and stored
+	 */
 	public static void displayProjects(List<String> arrayList) {
 		Iterator<String> iterator2 = arrayList.iterator();
 		while (iterator2.hasNext()) {
@@ -296,6 +364,20 @@ public class UserInterface {
 		}
 	}
 
+	/**
+	 * This method gets multiple string objects are joins using a comma
+	 * and a space as a delimiter. The method is used to join
+	 * 
+	 * @param name  the name of the project
+	 * @param number    the number specific to a project
+	 * @param building   the building type
+	 * @param address    the address of the project
+	 * @param erf        the erf number of the project
+	 * @param fee     the project fee
+	 * @param balance     the outstanding balance of the project
+	 * @param deadline     the deadline date of the project
+	 * @return      this method returns the joined string
+	 */
 	private static String stringJoiner(String name, String number, String building, String address, String erf,
 			String fee, String balance, String deadline) {
 		String stringJoined = null;
@@ -307,6 +389,20 @@ public class UserInterface {
 		return stringJoined;
 	}
 
+	/**
+	 * Formats multiple data types into one string element.
+	 * 
+	 * @param projectName    the name of the project
+	 * @param projectNumber      the number specific to a project
+	 * @param buildingType      the building type
+	 * @param physicalAddressOfProject     the address of the project
+	 * @param erfNumberForProject       the erf number of the project
+	 * @param projectFee         the project fee
+	 * @param outstandingBalance      the outstanding balance of the project
+	 * @param projectDeadline      the deadline date of the project
+	 * @return
+	 * @see   Project
+	 */
 	public static String stringFormatter(String projectName, int projectNumber, String buildingType,
 			String physicalAddressOfProject, int erfNumberForProject, float projectFee, float outstandingBalance,
 			String projectDeadline) {
@@ -321,6 +417,13 @@ public class UserInterface {
 		return newProjectString;
 	}
 
+	/**
+	 * Gets all the strings elements in an array
+	 * and adds them to an arraylist
+	 * 
+	 * @param array    the array from which the strings are taken from
+	 * @param list     the arraylist the elements are added
+	 */
 	public static void substringsToList(String[] array, List<String> list) {
 		try {
 			for (String x : array)
@@ -330,6 +433,15 @@ public class UserInterface {
 		}
 	}
 
+	/**
+	 * Gets a string object and splits the object at
+	 * at the delimiter specified as a comma and a space,
+	 * this is used is the project modification section
+	 * @param list    the arraylist whihc the string object is stored
+	 * @param arrayOfStrings    the array which the string object is split and stored  
+	 * @param userChoice    the selection of the string by the user
+	 * @return    the array of split string objects is returned
+	 */
 	public static String[] stringSplitterProjectEditor(List<String> list, String[] arrayOfStrings, int userChoice) {
 		try {
 			arrayOfStrings = list.get(userChoice).split(", ");
@@ -338,7 +450,15 @@ public class UserInterface {
 		}
 		return arrayOfStrings;
 	}
-
+	/**
+	 * Gets a string object and splits the object at
+	 * at the delimiter specified as a comma and a space,
+	 * this is used in the project viewing section
+	 * @param list    the arraylist whihc the string object is stored
+	 * @param arrayOfStrings    the array which the string object is split and stored  
+	 * @param userChoice    the selection of the string by the user
+	 * @return    the array of split string objects is returned
+	 */
 	public static String[] stringSplitterForDates(List<String> list, String[] arrayOfStrings, int userChoice) {
 		try {
 			arrayOfStrings = list.get(userChoice).split(", ");
@@ -348,6 +468,13 @@ public class UserInterface {
 		return arrayOfStrings;
 	}
 
+	/**
+	 * Gets data from a text file and stores the
+	 * data in a arraylist
+	 * @param fileName   the file from which the methods gets data
+	 * @param list     the arraylist which the data is added
+	 * @throws FileNotFoundException   if the file is not found, this exception is thrown
+	 */
 	public static void dataImporter(String fileName, List<String> list) throws FileNotFoundException {
 		try {
 			Scanner importer = new Scanner(new File(fileName));
@@ -365,6 +492,15 @@ public class UserInterface {
 		}
 	}
 
+	/**
+	 * This method changes the deadline date
+	 * the old deadline date is removed and is replaced
+	 * by the new date input by the user
+	 * @param <E>
+	 * @param list   the arraylist to which the deadline date is added to.
+	 * @see stringSplitterProjectEditor
+	 * @see Project
+	 */
 	public static <E> void deadlineChange(List<String> list) {
 		System.out.println("Enter the new deadline (dd/mm/yyyy): ");
 		Scanner newDateEntry = new Scanner(System.in);
@@ -378,7 +514,16 @@ public class UserInterface {
 		}
 	}
 
-	public static <E> void outstandingBalanceChange(List<String> list) {
+	/**
+	 * This method changes outstanding balance
+	 * the old balance is removed and is replaced
+	 * by the new date input by the user
+	 * @param <E>
+	 * @param list    the arraylist to which the outstanding balance is added to.
+	 * @see stringSplitterProjectEditor
+	 * @see Project
+	 */
+	public static <E> void balanceChange(List<String> list) {
 		System.out.println("Enter the new balance: ");
 		Scanner newBalanceEntry = new Scanner(System.in);
 		try {
@@ -392,6 +537,15 @@ public class UserInterface {
 		}
 	}
 
+	/**
+	 * methods generates an invoice dsiplaying
+	 * the invoice number, details of the client and
+	 * the amount still owing
+	 * @param newClientObject     client object
+	 * @param amountToPay     difference between the project fee and outstanding balance
+	 * @see Client
+	 * @see Person class 
+	 */
 	public static void invoiceGeneration(Client newClientObject, float amountToPay) {
 		int invoiceNumber = (int) (Math.random() * 10000);
 		System.out.println("Invoice " + " " + invoiceNumber + "\n");
@@ -399,6 +553,12 @@ public class UserInterface {
 		System.out.println("Outstanding balance: " + " " + amountToPay);
 	}
 
+	/**this methods gets user input for the purpose
+	 * of creating the client object
+	 * @return Client object from Client class
+	 * @see Client class
+	 * @see Person class
+	 */
 	public static Client clientObjectCreation() {
 		String nameOfClient = customerName();
 		int telephoneOfClient = customerTelephoneNumber();
@@ -411,6 +571,13 @@ public class UserInterface {
 	}
 
 	// Methods to capture the details of the project
+	/**
+	 * This method gets user input for the name of
+	 * the project, data could be used to create
+	 * a project object
+	 * @return    the name of the project input by user
+	 * @see Project class
+	 */
 	public static String projectNameCapture() {
 		System.out.println("The name of the project: ");// Name of the project
 		Scanner inputForName = new Scanner(System.in);
@@ -424,6 +591,13 @@ public class UserInterface {
 		return projectName;
 	}
 
+	/**
+	 * This method gets user input for the number
+	 *  specific to the project data could be used to create
+	 * a project object
+	 * @return    the number of the project input by user
+	 * @see Project class
+	 */
 	public static int projectNumberCapture() {
 		System.out.println("The project number: ");
 		Scanner inputForNumber = new Scanner(System.in);
@@ -436,6 +610,13 @@ public class UserInterface {
 		return projectNumber;
 	}
 
+	/**
+	 * This method gets user input for the type of
+	 * building specific to the project,the data could be used to create
+	 * a project object
+	 * @return    the building type of the project input by user
+	 * @see Project class
+	 */
 	public static String buildingTypeCapture() {
 		System.out.println("Building type (eg. Apartment, House etc.): ");
 		Scanner inputForBuilding = new Scanner(System.in);
@@ -447,7 +628,13 @@ public class UserInterface {
 		}
 		return buildingType;
 	}
-
+	/**
+	 * This method gets user input for the physical address of
+	 * the project,the data could be used to create
+	 * a project object
+	 * @return    the physical address of the project input by user
+	 * @see Project class
+	 */
 	public static String physicalAddressCapture() {
 		System.out.println("The physical address of the project: ");
 		Scanner inputForAddress = new Scanner(System.in);
@@ -459,7 +646,13 @@ public class UserInterface {
 		}
 		return physicalAddress;
 	}
-
+	/**
+	 * This method gets user input for the erf
+	 * number of the project,the data could be used to create
+	 * a project object
+	 * @return    the erf number of the project input by user
+	 * @see Project class
+	 */
 	public static int erfNumberCapture() {
 		System.out.println("The ERF number: ");
 		Scanner inputForErf = new Scanner(System.in);
@@ -471,7 +664,13 @@ public class UserInterface {
 		}
 		return erf;
 	}
-
+	/**
+	 * This method gets user input for the project
+	 * fee the project,the data could be used to create
+	 * a project object
+	 * @return    the project fee of the project input by user
+	 * @see Project class
+	 */
 	public static float projectFeeCapture() {
 		System.out.println("The total fee for the project: R ");
 		Scanner inputForProjectFee = new Scanner(System.in);
@@ -483,7 +682,13 @@ public class UserInterface {
 		}
 		return Math.round(fees);
 	}
-
+	/**
+	 * This method gets user input for outstanding
+	 * balance of the project,the data could be used to create
+	 * a project object
+	 * @return    the outstanding of the project input by user
+	 * @see Project class
+	 */
 	public static float outstandingBalance() {
 		System.out.println("The fees still outstanding: R ");
 		Scanner inputForBalance = new Scanner(System.in);
@@ -495,7 +700,13 @@ public class UserInterface {
 		}
 		return Math.round(balance);
 	}
-
+	/**
+	 * This method gets user input for the deadline
+	 * date of the project,the data could be used to create
+	 * a project object
+	 * @return    the deadline date of the project input by user
+	 * @see Project class
+	 */
 	public static String projectDeadline() {
 		System.out.println("The deadline for the project: " + "\n");
 		Scanner inputForDeadline = new Scanner(System.in);
@@ -509,6 +720,14 @@ public class UserInterface {
 	}
 
 	// Methods for capturing the details of the customers
+	/**
+	 * This method gets the client's name
+	 * from the user input, data could be used
+	 * to create a client object
+	 * @return    the client name input by user
+	 * @see Client class
+	 * @see Person class
+	 */
 	public static String customerName() {
 		System.out.println("Client's name: \n");
 		Scanner clientNamePrompt = new Scanner(System.in);
@@ -520,7 +739,14 @@ public class UserInterface {
 		}
 		return clientName;
 	}
-
+	/**
+	 * This method gets the client's telephone number
+	 * from the user input, data could be used
+	 * to create a client object
+	 * @return    the client's telephone number input by user
+	 * @see Client class
+	 * @see Person class
+	 */
 	public static int customerTelephoneNumber() {
 		System.out.println("Client's telephone number: \n");
 		Scanner clientTelephonePrompt = new Scanner(System.in);
@@ -532,7 +758,14 @@ public class UserInterface {
 		}
 		return clientTelephone;
 	}
-
+	/**
+	 * This method gets the client's email address
+	 * from the user input, data could be used
+	 * to create a client object
+	 * @return    the client's email address input by user
+	 * @see Client class
+	 * @see Person class
+	 */
 	public static String customerEmailAddress() {
 		System.out.println("Client's email address: \n");
 		Scanner clientEmailPrompt = new Scanner(System.in);
@@ -544,7 +777,14 @@ public class UserInterface {
 		}
 		return clientEmail;
 	}
-
+	/**
+	 * This method gets the client's physical address
+	 * from the user input, data could be used
+	 * to create a client object
+	 * @return    the client's physical address input by user
+	 * @see Client class
+	 * @see Person class
+	 */
 	public static String customerPhysicalAddress() {
 		System.out.println("Client's physical address: ");
 		Scanner clientAddressPrompt = new Scanner(System.in);
@@ -557,6 +797,10 @@ public class UserInterface {
 		return clientAddress;
 	}
 
+	/**
+	 * This method displays the options the user would
+	 * have in the main menu
+	 */
 	public static void mainMenu() {
 		System.out.println("Please select one of the following options: \n");
 		System.out.println(" 1. Project registration\n" + " 2. View projects\n" + " 3. Project editor");
